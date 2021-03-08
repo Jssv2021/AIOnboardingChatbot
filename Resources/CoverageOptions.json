@@ -1,0 +1,83 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Renters Insurance Coverage",
+      "wrap": true
+
+    },
+    {
+      "type": "Input.ChoiceSet",
+
+      "choices": [
+        {
+          "title": "16100",
+          "value": "16100"
+        },
+        {
+          "title": "32200",
+          "value": "32200"
+        }
+      ],
+      "placeholder": "PersonalPropertyCoverage",
+      "id": "PPC"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "choices": [
+        {
+          "title": "1000",
+          "value": "1000"
+        },
+        {
+          "title": "500",
+          "value": "500"
+        }
+      ],
+      "placeholder": "PropertyDeduction",
+      "id": "PD"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "choices": [
+        {
+          "title": "100000",
+          "value": "100000"
+        },
+        {
+          "title": "150000",
+          "value": "150000"
+        }
+      ],
+      "placeholder": "PersonalLiabilityLimit",
+      "id": "PLL"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "choices": [
+        {
+          "title": "25000",
+          "value": "25000"
+        },
+        {
+          "title": "5000",
+          "value": "35000"
+        }
+      ],
+      "placeholder": "DamageToPropertyOfOthers",
+      "id": "DTPOO"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "CoverageCardOk"
+      }
+    }
+  ]
+}

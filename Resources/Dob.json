@@ -1,0 +1,35 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Enter DOB",
+      "wrap": true
+    },
+    {
+      "type": "Input.Date",
+      "id": "DateOfBirth"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Enter Email ID",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "EmailAddress",
+      "placeholder": "Email Address"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "DobOK"
+      }
+    }
+  ]
+}

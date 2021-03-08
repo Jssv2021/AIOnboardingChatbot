@@ -1,0 +1,51 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Enter Mailing Address",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Address Line 1",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Address Line1",
+      "id": "AddressLine1"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Address Line 2",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Address Line2",
+      "id": "AddressLine2"
+    },
+    {
+      "type": "TextBlock",
+      "text": "State",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "State",
+      "id": "State"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "MailingAddressOK"
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Policy Details",
+      "wrap": true
+    },
+    {
+      "type": "Input.Date",
+      "placeholder": "Policy start date",
+      "id": "PolicyStartDate"
+    },
+    {
+      "type": "Input.Date",
+      "placeholder": "Policy end date",
+      "id": "PolicyExpiryDate"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "choices": [
+        {
+          "title": "Credit",
+          "value": "Credit"
+        },
+        {
+          "title": "Debit",
+          "value": "Debit"
+        }
+      ],
+      "placeholder": "Payment Option",
+      "id": "PO"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "PolicySummaryOk"
+      }
+    }
+  ]
+}

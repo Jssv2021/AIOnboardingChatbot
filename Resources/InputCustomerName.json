@@ -1,0 +1,42 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Please enter your FirstName, MiddleName, LastName",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "First Name",
+      "id": "FirstName"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Middle Name",
+      "id": "MiddleName"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Last Name",
+      "id": "LastName"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "MobileNumber",
+      "id": "MobileNumber"
+    }
+
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "CustomerNameOK"
+      }
+    }
+  ]
+}

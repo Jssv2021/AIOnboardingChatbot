@@ -1,0 +1,28 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Hey there, friend! I'm Cadal the virtual assitant powered by Artifical intelligence, I'm here to help you with Renters Insurance",
+      "wrap": true
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "New Customer",
+      "data": {
+        "button": "NewCustomer"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Existing Customer",
+      "data": {
+        "button": "ExistingCustomer"
+      }
+    }
+  ]
+}

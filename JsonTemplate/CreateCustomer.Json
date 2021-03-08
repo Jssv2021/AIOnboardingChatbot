@@ -1,0 +1,9 @@
+﻿{
+  "firstName": "string",
+  "lastName": "string",
+  "dateOfBirth": "2021-03-03T05:20:45.757Z",
+  "streetAddress": "string",
+  "zipCode": "string",
+  "mobileNumber": "string",
+  "emailAddress": "string"
+}
