@@ -1,15 +1,30 @@
 ﻿using System;
 namespace ChatbotCustomerOnboarding.DataModel
 {
-    public class CustomerPolicy
+    public sealed class CustomerPolicy
     {
-        public static int CustomerId { get; set; }
-        public static DateTime PolicyEffectiveDate { get; set; }
-        public static DateTime PolicyExpiryDate { get; set; }
-        public static string PaymentOption { get; set; }
-        public static double TotalAmount { get; set; }
-        public static string Active { get; set; }
-        public static int policyNumber { get; set; }
+        private CustomerPolicy()
+        {
+        }
+        private static CustomerPolicy instance = null;
+        public static CustomerPolicy Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new CustomerPolicy();
+                }
+                return instance;
+            }
+        }
+        public int CustomerId { get; set; }
+        public DateTime PolicyEffectiveDate { get; set; }
+        public DateTime PolicyExpiryDate { get; set; }
+        public string PaymentOption { get; set; }
+        public double TotalAmount { get; set; }
+        public string Active { get; set; }
+        public int policyNumber { get; set; }
     }
 }
 

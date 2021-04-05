@@ -15,7 +15,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
     /// *Returns the name of the Thumbnail card*/
     ///-----------------------------------------------------------------
 
-    public class CustomerInfo : CreateCustomer
+    public class CustomerInfo
     {
         //TODO Use one model to hold all properties.
         public static async void AddCustomerDetails(JToken customerDetails)
@@ -24,22 +24,22 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             {
                 foreach (var input in customerDetails)
                 {
-                    if ((input.ToString()).Contains("FirstName")) CustomerInfo.FirstName = input.First.ToString();
-                    if ((input.ToString()).Contains("MiddleName")) CustomerInfo.MiddleName = input.First.ToString();
-                    if ((input.ToString()).Contains("LastName")) CustomerInfo.LastName = input.First.ToString();
-                    if ((input.ToString()).Contains("ZipCode")) CustomerInfo.ZipCode = input.First.ToString();
-                    if ((input.ToString()).Contains("AddressLine1")) CustomerInfo.AddressLine1 = input.First.ToString();
-                    if ((input.ToString()).Contains("AddressLine2")) CustomerInfo.AddressLine2 = input.First.ToString();
-                    if ((input.ToString()).Contains("State")) CustomerInfo.State = input.First.ToString();
-                    if ((input.ToString()).Contains("Email")) CustomerInfo.EmailAddress = input.First.ToString();
-                    if ((input.ToString()).Contains("PPC")) CustomerCoverage.PersonalPropertyCoverage = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PLL")) CustomerCoverage.PersonalLiabilityLimit = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PD")) CustomerCoverage.PropertyDeduction = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("DTPOO")) CustomerCoverage.DamageToPropertyOfOthers = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PolicyEffectiveDate")) CustomerPolicy.PolicyEffectiveDate = Convert.ToDateTime(input.First.ToString());
-                    if ((input.ToString()).Contains("PolicyExpiryDate")) CustomerPolicy.PolicyExpiryDate = Convert.ToDateTime(input.First.ToString());
-                    if ((input.ToString()).Contains("PO")) CustomerPolicy.PaymentOption = input.First.ToString();
-                    if ((input.ToString()).Contains("MobileNumber")) CustomerInfo.MobileNumber = input.First.ToString(); ;
+                    if ((input.ToString()).Contains("FirstName")) CreateCustomer.Instance.FirstName = input.First.ToString();
+                    if ((input.ToString()).Contains("MiddleName")) CreateCustomer.Instance.MiddleName = input.First.ToString();
+                    if ((input.ToString()).Contains("LastName")) CreateCustomer.Instance.LastName = input.First.ToString();
+                    if ((input.ToString()).Contains("ZipCode")) CreateCustomer.Instance.ZipCode = input.First.ToString();
+                    if ((input.ToString()).Contains("AddressLine1")) CreateCustomer.Instance.AddressLine1 = input.First.ToString();
+                    if ((input.ToString()).Contains("AddressLine2")) CreateCustomer.Instance.AddressLine2 = input.First.ToString();
+                    if ((input.ToString()).Contains("State")) CreateCustomer.Instance.State = input.First.ToString();
+                    if ((input.ToString()).Contains("Email")) CreateCustomer.Instance.EmailAddress = input.First.ToString();
+                    if ((input.ToString()).Contains("PPC")) CustomerCoverage.Instance.PersonalPropertyCoverage = Convert.ToDouble(input.First.ToString());
+                    if ((input.ToString()).Contains("PLL")) CustomerCoverage.Instance.PersonalLiabilityLimit = Convert.ToDouble(input.First.ToString());
+                    if ((input.ToString()).Contains("PD")) CustomerCoverage.Instance.PropertyDeduction = Convert.ToDouble(input.First.ToString());
+                    if ((input.ToString()).Contains("DTPOO")) CustomerCoverage.Instance.DamageToPropertyOfOthers = Convert.ToDouble(input.First.ToString());
+                    if ((input.ToString()).Contains("PolicyEffectiveDate")) CustomerPolicy.Instance.PolicyEffectiveDate = Convert.ToDateTime(input.First.ToString());
+                    if ((input.ToString()).Contains("PolicyExpiryDate")) CustomerPolicy.Instance.PolicyExpiryDate = Convert.ToDateTime(input.First.ToString());
+                    if ((input.ToString()).Contains("PO")) CustomerPolicy.Instance.PaymentOption = input.First.ToString();
+                    if ((input.ToString()).Contains("MobileNumber")) CreateCustomer.Instance.MobileNumber = input.First.ToString(); ;
                 }
 
             }

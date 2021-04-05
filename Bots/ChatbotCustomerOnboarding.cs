@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ChatbotCustomerOnboarding.BotHelpers;
 using ChatbotCustomerOnboarding.DataModel;
+using KnowledgeBase;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -32,6 +33,7 @@ namespace Microsoft.BotBuilderSamples.Bots
         static bool _userResponseFlag;
 
 
+
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             await SendWelcomeMessageAsync(turnContext, cancellationToken);
@@ -42,7 +44,17 @@ namespace Microsoft.BotBuilderSamples.Bots
             try
             {
                 bool cardFlag = false;
-                _userInput = turnContext.Activity.Value.ToString();
+
+                //Call to Knowledge Base
+                if (turnContext.Activity.TextFormat != null)
+                {
+                    var userResponse = QNAMaker.KnowledgeBase(turnContext);
+                    await turnContext.SendActivityAsync(MessageFactory.Text(userResponse), cancellationToken);
+                    return;
+                };
+
+
+                _userInput = UserInputType(turnContext);
                 if (UserResponse()) { _userResponse = _userInput; } else { _userResponse = JToken.Parse(_userInput); }
                 dynamic cardType = DetectCardType();
 
@@ -50,8 +62,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (cardType == Card.AdaptiveCard)
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse["button"].ToString()).Result.ToString();
-                    AddUserInputs(turnContext);
-                    if (_currentActiveCard == Card.QuoteCard) { GetCustomer.Quote = await QuoteCard.GetQuote(); _cardAttachment = CreateQuoteCardAttachment(); cardFlag = true; }
+                    AddUserInputs(_userResponse);
+                    if (_currentActiveCard == Card.QuoteCard) { GetCustomer.Instance.Quote = await QuoteCard.GetQuote(); _cardAttachment = CreateQuoteCardAttachment(); cardFlag = true; }
                     if (_currentActiveCard == Card.RentersInsuranceCard) { var policy = await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
@@ -59,7 +71,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 else
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse.ToString()).Result.ToString();
-                    if (_currentActiveCard == Card.EmailConfirmationCard) { var customerInfo = await QuoteCard.CreateCustomer(); _cardAttachment = QuoteCardAttachment(); cardFlag = true; }
+                    if (_currentActiveCard == Card.EmailConfirmationCard) { var customerInfo = await QuoteCard.CreateCustomerRentersInsurance(); _cardAttachment = QuoteCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
 
@@ -89,48 +101,44 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         //Generic AdaptiveAttachment - For All adaptive cards
 
-        private static Attachment CreateAdaptiveCardAttachment(string filePath)
-        {
-            var adaptiveCardJson = File.ReadAllText(filePath);
-            var adaptiveCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
-            };
-            return adaptiveCardAttachment;
-        }
+        private static Func<string, Attachment> CreateAdaptiveCardAttachment = (filePath) =>
+   {
+       var adaptiveCardJson = File.ReadAllText(filePath);
+       var adaptiveCardAttachment = new Attachment()
+       {
+           ContentType = "application/vnd.microsoft.card.adaptive",
+           Content = JsonConvert.DeserializeObject(adaptiveCardJson),
+       };
+       return adaptiveCardAttachment;
+
+   };
 
         //ThumbNail Attachments
 
-        private static Attachment CreateQuoteCardAttachment()
-        {
-            var cardAttachment = QuoteCard.QuoteSummary();
-            return cardAttachment;
-        }
-        private static Attachment CreateRentersInsuranceCardAttachment()
+        private static Func<Attachment> CreateQuoteCardAttachment = () =>
+      {
+          var cardAttachment = QuoteCard.QuoteSummary();
+          return cardAttachment;
+      };
+
+        private static Func<Attachment> CreateRentersInsuranceCardAttachment = () =>
         {
             var coverage = QuoteCard.AddCoverage();
-
             var cardAttachment = QuoteCard.RentersInsuranceSummary();
             return cardAttachment;
-        }
-
+        };
 
         //Identity CardType based on Response
 
-        private static string DetectCardType()
+        private static Func<string> DetectCardType = () =>
         {
             if (_userResponse.ToString().Contains("{")) return Card.AdaptiveCard;
             return Card.ThumbNailCard;
-        }
+        };
 
         //Add user input to data model
 
-        private static void AddUserInputs(dynamic turnContext)
-        {
-
-            CustomerInfo.AddCustomerDetails(_userResponse);
-        }
+        private static Action<dynamic> AddUserInputs = (_userResponse) => { CustomerInfo.AddCustomerDetails(_userResponse); };
 
         public static bool UserResponse()
         {
@@ -142,16 +150,26 @@ namespace Microsoft.BotBuilderSamples.Bots
             {
                 return false;
             }
-
         }
 
+        private static Func<Attachment> QuoteCardAttachment = () =>
+            {
+                var cardAttachment = QuoteCard.EmailConfirmation();
+                var emailFlag = EmailService.SendEmail(GetCustomer.Instance.Quote);
+                return cardAttachment;
+            };
 
-        private static Attachment QuoteCardAttachment()
+        private static Func<dynamic, string> UserInputType = (userContextResponse) =>
         {
-            var cardAttachment = QuoteCard.EmailConfirmation();
-            var emailFlag = EmailService.SendEmail(GetCustomer.Quote);
-            return cardAttachment;
-        }
+            if (userContextResponse.Activity.Text == null)
+            {
+                return userContextResponse.Activity.Value.ToString();
+            }
+            else
+            {
+                return userContextResponse.Activity.Text.ToString();
+            }
+        };
     }
 }
 

@@ -28,6 +28,7 @@
     <Folder Include="BotHelpers\" />
     <Folder Include="DataModel\" />
     <Folder Include="JsonTemplate\" />
+    <Folder Include="KnowledgeBase\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="APIHelper\APIHelper\obj\Debug\netcoreapp3.1\APIHelper.AssemblyInfo.cs" />

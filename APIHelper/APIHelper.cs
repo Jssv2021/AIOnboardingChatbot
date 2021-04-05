@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 /* Generic REST API library to call customer onboarding services*/
 ///-----------------------------------------------------------------
@@ -60,7 +62,7 @@ namespace ChatbotCustomerOnboarding
             }
         }
 
-        public async Task<HttpResponseMessage> PostAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null, string subscriptionName = null)
+        public async Task<HttpResponseMessage> PostAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null, string subscriptionName = null, string authorization = null)
 
         {
             try
@@ -77,6 +79,9 @@ namespace ChatbotCustomerOnboarding
 
                 httpRequestMessage.Headers.Add(subscriptionName ?? "Ocp-Apim-Subscription-Key", apimSubscriptionKey);
 
+                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("EndpointKey", authorization);
+                //authorization ?? 
+
                 httpRequestMessage.Content = (HttpContent)new StringContent(payload, Encoding.UTF8, contentType);
 
                 var httpResponseMessage = await client.SendAsync(httpRequestMessage);
@@ -85,6 +90,7 @@ namespace ChatbotCustomerOnboarding
 
                 {
                     var message = $"Failed POST Reponse Code '{query}'. Expected: {responseCode}, Actual: " + $"{httpResponseMessage.StatusCode}. Error Message: {httpResponseMessage.Content.ReadAsStringAsync().Result}. Status: Fail";
+
                     //TODO Log
                 }
 
@@ -92,6 +98,7 @@ namespace ChatbotCustomerOnboarding
 
                 {
                     //TODO Log
+
                 }
 
                 return httpResponseMessage;

@@ -24,12 +24,12 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             try
             {
                 IAPIHelper Invoke = new APIHelper();
-                var getQuoteRate = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/InsuranceQuote/", $"{CustomerInfo.ZipCode}", HttpStatusCode.OK);
+                var getQuoteRate = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/InsuranceQuote/", $"{CreateCustomer.Instance.ZipCode}", HttpStatusCode.OK);
                 string getQuoteJson = await getQuoteRate.Content.ReadAsStringAsync();
                 if (getQuoteJson != "")
                 {
                     var getQuote = JsonConvert.DeserializeObject<GetQuote>(getQuoteJson.ToString());
-                    CustomerPolicy.TotalAmount = (Convert.ToDouble(getQuote.Quote) * 12);
+                    CustomerPolicy.Instance.TotalAmount = (Convert.ToDouble(getQuote.Quote) * 12);
                     return getQuote.Quote;
                 }
                 return null;
@@ -41,25 +41,25 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             }
         }
 
-        public async static Task<string> CreateCustomer()
+        public async static Task<string> CreateCustomerRentersInsurance()
         {
             try
             {
                 IAPIHelper Invoke = new APIHelper();
                 JObject customerRecord = JObject.Parse(File.ReadAllText(Path.Combine(".", "JsonTemplate", "CreateCustomer.json")));
                 //TODO 
-                customerRecord["zipCode"] = CustomerInfo.ZipCode;
-                customerRecord["firstName"] = CustomerInfo.FirstName;
-                customerRecord["lastName"] = CustomerInfo.LastName;
-                customerRecord["streetAddress"] = $"{CustomerInfo.AddressLine1}{CustomerInfo.AddressLine2}";
-                customerRecord["mobileNumber"] = CustomerInfo.MobileNumber;
-                customerRecord["emailAddress"] = CustomerInfo.EmailAddress;
+                customerRecord["zipCode"] = CreateCustomer.Instance.ZipCode;
+                customerRecord["firstName"] = CreateCustomer.Instance.FirstName;
+                customerRecord["lastName"] = CreateCustomer.Instance.LastName;
+                customerRecord["streetAddress"] = $"{CreateCustomer.Instance.AddressLine1}{CreateCustomer.Instance.AddressLine2}";
+                customerRecord["mobileNumber"] = CreateCustomer.Instance.MobileNumber;
+                customerRecord["emailAddress"] = CreateCustomer.Instance.EmailAddress;
                 var getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer", "", HttpStatusCode.Created, customerRecord.ToString());
                 string getQuoteJson = await getCustomer.Content.ReadAsStringAsync();
                 if (getQuoteJson != "")
                 {
                     var getCustomerInfo = JsonConvert.DeserializeObject<GetCustomer>(getQuoteJson.ToString());
-                    CustomerInfo.CustomerId = Convert.ToInt32(getCustomerInfo.CustomerId);
+                    CreateCustomer.Instance.CustomerId = Convert.ToInt32(getCustomerInfo.CustomerId);
                     return getCustomerInfo.CustomerId.ToString();
 
                 }
@@ -79,11 +79,11 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 IAPIHelper Invoke = new APIHelper();
                 JObject customerRecord = JObject.Parse(File.ReadAllText(Path.Combine(".", "JsonTemplate", "AddCoverage.json")));
                 //TODO
-                customerRecord["customerId"] = CustomerInfo.CustomerId;
-                customerRecord["personalPropertyCoverage"] = CustomerCoverage.PersonalLiabilityLimit;
-                customerRecord["propertyDeduction"] = CustomerCoverage.PropertyDeduction;
-                customerRecord["personalLiabilityLimit"] = CustomerCoverage.PersonalLiabilityLimit;
-                customerRecord["damageToPropertyOfOthers"] = CustomerCoverage.DamageToPropertyOfOthers;
+                customerRecord["customerId"] = CreateCustomer.Instance.CustomerId;
+                customerRecord["personalPropertyCoverage"] = CustomerCoverage.Instance.PersonalLiabilityLimit;
+                customerRecord["propertyDeduction"] = CustomerCoverage.Instance.PropertyDeduction;
+                customerRecord["personalLiabilityLimit"] = CustomerCoverage.Instance.PersonalLiabilityLimit;
+                customerRecord["damageToPropertyOfOthers"] = CustomerCoverage.Instance.DamageToPropertyOfOthers;
 
                 var getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Coverage", "", HttpStatusCode.Created, customerRecord.ToString());
                 string getQuoteJson = await getCustomer.Content.ReadAsStringAsync();
@@ -108,18 +108,18 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 IAPIHelper Invoke = new APIHelper();
                 JObject customerRecord = JObject.Parse(File.ReadAllText(Path.Combine(".", "JsonTemplate", "CreatePolicy.json")));
                 //TODO
-                customerRecord["customerId"] = CustomerInfo.CustomerId;
-                customerRecord["policyEffectiveDate"] = CustomerPolicy.PolicyEffectiveDate;
-                customerRecord["policyExpiryDate"] = CustomerPolicy.PolicyExpiryDate;
-                customerRecord["paymentOption"] = CustomerPolicy.PaymentOption;
-                customerRecord["totalAmount"] = CustomerPolicy.TotalAmount;
+                customerRecord["customerId"] = CreateCustomer.Instance.CustomerId;
+                customerRecord["policyEffectiveDate"] = CustomerPolicy.Instance.PolicyEffectiveDate;
+                customerRecord["policyExpiryDate"] = CustomerPolicy.Instance.PolicyExpiryDate;
+                customerRecord["paymentOption"] = CustomerPolicy.Instance.PaymentOption;
+                customerRecord["totalAmount"] = CustomerPolicy.Instance.TotalAmount;
 
                 var getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Policy", "", HttpStatusCode.Created, customerRecord.ToString());
                 string getQuoteJson = await getCustomer.Content.ReadAsStringAsync();
                 if (getQuoteJson != "")
                 {
                     var getCustomerInfo = JsonConvert.DeserializeObject<GetCustomer>(getQuoteJson.ToString());
-                    CustomerInfo.PolicyNumber = getCustomerInfo.PolicyNumber;
+                    CreateCustomer.Instance.PolicyNumber = getCustomerInfo.PolicyNumber;
                 }
                 return null;
             }
@@ -134,9 +134,9 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         {
             var thumbnailCard = new ThumbnailCard
             {
-                Title = $"Renters Insurance Quote - EstimatedTotal: {GetCustomer.Quote} per month;",
+                Title = $"Renters Insurance Quote - EstimatedTotal: {GetCustomer.Instance.Quote} per month;",
                 Subtitle = "Personal Details",
-                Text = $"Name:{CustomerInfo.FirstName} {CustomerInfo.MiddleName} {CustomerInfo.LastName}; Address: {CustomerInfo.AddressLine1}, {CustomerInfo.AddressLine2},State: {CustomerInfo.State}, ZipCode: {CustomerInfo.ZipCode}",
+                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; Address: {CreateCustomer.Instance.AddressLine1}, {CreateCustomer.Instance.AddressLine2},State: {CreateCustomer.Instance.State}, ZipCode: {CreateCustomer.Instance.ZipCode}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "QuoteCardOk"
                         ) }
@@ -151,13 +151,13 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             var thumbnailCard = new ThumbnailCard
             {
                 Title = $"Renters insurance has been successfully Purchased:",
-                Subtitle = $"Customer ID: {CustomerInfo.CustomerId},PolicyNo: {CustomerInfo.PolicyNumber}",
-                Text = $"Name:{CustomerInfo.FirstName} {CustomerInfo.MiddleName} {CustomerInfo.LastName}; " +
-                $"Address: {CustomerInfo.AddressLine1}, " +
-                $"{CustomerInfo.AddressLine2}," +
-                $"State: {CustomerInfo.State}, " +
-                $"ZipCode: {CustomerInfo.ZipCode}," +
-                $"Total Amount:{CustomerPolicy.TotalAmount}",
+                Subtitle = $"Customer ID: {CreateCustomer.Instance.CustomerId},PolicyNo: {CreateCustomer.Instance.PolicyNumber}",
+                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; " +
+                $"Address: {CreateCustomer.Instance.AddressLine1}, " +
+                $"{CreateCustomer.Instance.AddressLine2}," +
+                $"State: {CreateCustomer.Instance.State}, " +
+                $"ZipCode: {CreateCustomer.Instance.ZipCode}," +
+                $"Total Amount:{CustomerPolicy.Instance.TotalAmount}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "CustomerOk"
                         ) }
@@ -171,8 +171,8 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             var thumbnailCard = new ThumbnailCard
             {
                 Title = $"An email has been sent with quote information:",
-                Subtitle = $"Customer ID:{CustomerInfo.CustomerId}, {CustomerInfo.EmailAddress}",
-                Text = $"Name:{CustomerInfo.FirstName} {CustomerInfo.MiddleName} {CustomerInfo.LastName}; Address: {CustomerInfo.AddressLine1}, {CustomerInfo.AddressLine2},State: {CustomerInfo.State}, ZipCode: {CustomerInfo.ZipCode}",
+                Subtitle = $"Customer ID:{CreateCustomer.Instance.CustomerId}, {CreateCustomer.Instance.EmailAddress}",
+                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; Address: {CreateCustomer.Instance.AddressLine1}, {CreateCustomer.Instance.AddressLine2},State: {CreateCustomer.Instance.State}, ZipCode: {CreateCustomer.Instance.ZipCode}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "emailConfirmOk"
                         ) }
