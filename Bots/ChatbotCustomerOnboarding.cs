@@ -49,7 +49,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (turnContext.Activity.TextFormat != null)
                 {
                     var userResponse = QNAMaker.KnowledgeBase(turnContext);
-                    await turnContext.SendActivityAsync(MessageFactory.Text(userResponse), cancellationToken);
+                    await turnContext.SendActivityAsync(userResponse, cancellationToken);
                     return;
                 };
 

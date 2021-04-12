@@ -8,7 +8,11 @@
     },
     {
       "type": "Input.Date",
-      "id": "DateOfBirth"
+      "id": "DateOfBirth",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Date of Birth is required"
+      }
     },
     {
       "type": "TextBlock",
@@ -18,7 +22,11 @@
     {
       "type": "Input.Text",
       "id": "EmailAddress",
-      "placeholder": "Email Address"
+      "placeholder": "Email Address",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Email Address is required"
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

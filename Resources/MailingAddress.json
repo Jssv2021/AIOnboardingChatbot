@@ -14,7 +14,11 @@
     {
       "type": "Input.Text",
       "placeholder": "Address Line1",
-      "id": "AddressLine1"
+      "id": "AddressLine1",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "AddressLine1 is required"
+      }
     },
     {
       "type": "TextBlock",
@@ -25,6 +29,7 @@
       "type": "Input.Text",
       "placeholder": "Address Line2",
       "id": "AddressLine2"
+
     },
     {
       "type": "TextBlock",
@@ -34,7 +39,11 @@
     {
       "type": "Input.Text",
       "placeholder": "State",
-      "id": "State"
+      "id": "State",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "State is required"
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

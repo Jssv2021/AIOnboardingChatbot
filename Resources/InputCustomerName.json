@@ -9,7 +9,11 @@
     {
       "type": "Input.Text",
       "placeholder": "First Name",
-      "id": "FirstName"
+      "id": "FirstName",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "First Name is required"
+      }
     },
     {
       "type": "Input.Text",
@@ -19,12 +23,20 @@
     {
       "type": "Input.Text",
       "placeholder": "Last Name",
-      "id": "LastName"
+      "id": "LastName",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Last Name is required"
+      }
     },
     {
       "type": "Input.Text",
       "placeholder": "MobileNumber",
-      "id": "MobileNumber"
+      "id": "MobileNumber",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Mobile Number is required"
+      }
     }
 
   ],

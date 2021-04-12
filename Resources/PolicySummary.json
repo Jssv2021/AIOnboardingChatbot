@@ -9,12 +9,20 @@
     {
       "type": "Input.Date",
       "placeholder": "Policy start date",
-      "id": "PolicyStartDate"
+      "id": "PolicyStartDate",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "PolicyStartDate is required"
+      }
     },
     {
       "type": "Input.Date",
       "placeholder": "Policy end date",
-      "id": "PolicyExpiryDate"
+      "id": "PolicyExpiryDate",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Policy end date is required"
+      }
     },
     {
       "type": "Input.ChoiceSet",
@@ -29,7 +37,11 @@
         }
       ],
       "placeholder": "Payment Option",
-      "id": "PO"
+      "id": "PO",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Payment Option is required"
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

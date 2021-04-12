@@ -1,0 +1,9 @@
+﻿{
+  "feedbackRecords": [
+    {
+      "userId": "1",
+      "userQuestion": "<question-text>",
+      "qnaId": 1
+    }
+  ]
+}
