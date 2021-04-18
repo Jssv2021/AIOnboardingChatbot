@@ -31,6 +31,7 @@ namespace Microsoft.BotBuilderSamples.Bots
         static dynamic _userInput;
         static dynamic _userResponse;
         static bool _userResponseFlag;
+        static string errorHandlingText = "Please correct the errors and Re-submit or Type 'Help'";
 
 
 
@@ -62,8 +63,30 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (cardType == Card.AdaptiveCard)
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse["button"].ToString()).Result.ToString();
-                    AddUserInputs(_userResponse);
-                    if (_currentActiveCard == Card.QuoteCard) { GetCustomer.Instance.Quote = await QuoteCard.GetQuote(); _cardAttachment = CreateQuoteCardAttachment(); cardFlag = true; }
+
+                    /*Validate Input and Add User Information*/
+                    var result = AddUserInputs(_userResponse);
+
+                    if (result.Contains("Error"))
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text($"{result} {errorHandlingText}"), cancellationToken);
+                        return;
+                    };
+
+                    if (_currentActiveCard == Card.QuoteCard)
+                    {
+
+                        result = await QuoteCard.GetQuote();
+                        if (result.Contains("Error"))
+                        {
+                            await turnContext.SendActivityAsync(MessageFactory.Text($"{result} {errorHandlingText}"), cancellationToken);
+                            return;
+                        };
+                        GetCustomer.Instance.Quote = result;
+                        _cardAttachment = CreateQuoteCardAttachment();
+                        cardFlag = true;
+                    }
+
                     if (_currentActiveCard == Card.RentersInsuranceCard) { var policy = await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
@@ -138,7 +161,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         //Add user input to data model
 
-        private static Action<dynamic> AddUserInputs = (_userResponse) => { CustomerInfo.AddCustomerDetails(_userResponse); };
+        private static Func<dynamic, string> AddUserInputs = (_userResponse) => { return CustomerInfo.AddCustomerDetails(_userResponse); };
 
         public static bool UserResponse()
         {
