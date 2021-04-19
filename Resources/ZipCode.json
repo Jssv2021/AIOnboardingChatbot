@@ -9,8 +9,7 @@
     {
       "type": "Input.Text",
       "placeholder": "ZipCode",
-      "min": 1,
-      "max": 10,
+      "maxLength": 5,
       "id": "ZipCode",
       "validation": {
         "necessity": "Required",

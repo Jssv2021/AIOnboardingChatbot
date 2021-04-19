@@ -6,6 +6,7 @@ using ChatbotCustomerOnboarding.DataModel;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static ChatbotCustomerOnboarding.ErrorValidation.Validator;
 
 /* Class to Interact with Rest API services/
    ///-----------------------------------------------------------------
@@ -17,28 +18,22 @@ using Newtonsoft.Json.Linq;
 
 namespace ChatbotCustomerOnboarding.BotHelpers
 {
-    public class QuoteCard
+    public class QuoteCard : GenericHelpers
     {
         public async static Task<dynamic> GetQuote()
         {
-            try
+
+            IAPIHelper Invoke = new APIHelper();
+            var getQuoteRate = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/InsuranceQuote/", $"{CreateCustomer.Instance.ZipCode}", HttpStatusCode.OK);
+
+            if (getQuoteRate != null && getQuoteRate.StatusCode == HttpStatusCode.OK)
             {
-                IAPIHelper Invoke = new APIHelper();
-                var getQuoteRate = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/InsuranceQuote/", $"{CreateCustomer.Instance.ZipCode}", HttpStatusCode.OK);
                 string getQuoteJson = await getQuoteRate.Content.ReadAsStringAsync();
-                if (getQuoteJson != "")
-                {
-                    var getQuote = JsonConvert.DeserializeObject<GetQuote>(getQuoteJson.ToString());
-                    CustomerPolicy.Instance.TotalAmount = (Convert.ToDouble(getQuote.Quote) * 12);
-                    return getQuote.Quote;
-                }
-                return null;
+                var getQuote = Deserialize<GetQuote>(getQuoteJson.ToString());
+                CustomerPolicy.Instance.TotalAmount = (Convert.ToDouble(getQuote.Quote) * 12);
+                return getQuote.Quote;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString()); //Replace with Logger TODO
-                return null;
-            }
+            return $"{IsInvalid} Quote Not Found for the provided ZipCode";
         }
 
         public async static Task<string> CreateCustomerRentersInsurance()

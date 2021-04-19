@@ -2,10 +2,13 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using System.Text;
 using ChatbotCustomerOnboarding.DataModel;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+
 
 namespace ChatbotCustomerOnboarding.BotHelpers
 {
@@ -20,7 +23,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
     /// *Returns the name of the Thumbnail card*/
     ///-----------------------------------------------------------------
 
-    public class CustomerInfo
+    public class CustomerInfo : GenericHelpers
     {
         public async static Task<CustomerDto> GetCustomer(string emailAddress)
         {
@@ -44,39 +47,49 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         }
 
         //TODO Use one model to hold all properties.
-        public static async void AddCustomerDetails(JToken customerDetails)
+        public static string AddCustomerDetails(JToken customerDetails)
         {
-            try
-            {
-                foreach (var input in customerDetails)
-                {
-                    if ((input.ToString()).Contains("FirstName")) CreateCustomer.Instance.FirstName = input.First.ToString();
-                    if ((input.ToString()).Contains("MiddleName")) CreateCustomer.Instance.MiddleName = input.First.ToString();
-                    if ((input.ToString()).Contains("LastName")) CreateCustomer.Instance.LastName = input.First.ToString();
-                    if ((input.ToString()).Contains("ZipCode")) CreateCustomer.Instance.ZipCode = input.First.ToString();
-                    if ((input.ToString()).Contains("AddressLine1")) CreateCustomer.Instance.AddressLine1 = input.First.ToString();
-                    if ((input.ToString()).Contains("AddressLine2")) CreateCustomer.Instance.AddressLine2 = input.First.ToString();
-                    if ((input.ToString()).Contains("State")) CreateCustomer.Instance.State = input.First.ToString();
-                    if ((input.ToString()).Contains("Email")) CreateCustomer.Instance.EmailAddress = input.First.ToString();
-                    if ((input.ToString()).Contains("PPC")) CustomerCoverage.Instance.PersonalPropertyCoverage = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PLL")) CustomerCoverage.Instance.PersonalLiabilityLimit = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PD")) CustomerCoverage.Instance.PropertyDeduction = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("DTPOO")) CustomerCoverage.Instance.DamageToPropertyOfOthers = Convert.ToDouble(input.First.ToString());
-                    if ((input.ToString()).Contains("PolicyEffectiveDate")) CustomerPolicy.Instance.PolicyEffectiveDate = Convert.ToDateTime(input.First.ToString());
-                    if ((input.ToString()).Contains("PolicyExpiryDate")) CustomerPolicy.Instance.PolicyExpiryDate = Convert.ToDateTime(input.First.ToString());
-                    if ((input.ToString()).Contains("PO")) CustomerPolicy.Instance.PaymentOption = input.First.ToString();
-                    if ((input.ToString()).Contains("MobileNumber")) CreateCustomer.Instance.MobileNumber = input.First.ToString(); ;
-                }
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
+            var jResult = JObjectParse(customerDetails.ToString());
 
-            }
+            var usrInputResult = new StringBuilder();
+
+            if (Exists(jResult, "FirstName")) { usrInputResult.AppendLine(CreateCustomer.SetFirstName(jResult["FirstName"].ToString())); }
+
+            if (Exists(jResult, "MiddleName")) { usrInputResult.AppendLine(CreateCustomer.SetMiddleName(jResult["MiddleName"].ToString())); }
+
+            if (Exists(jResult, "LastName")) { usrInputResult.AppendLine(CreateCustomer.SetLastName(jResult["LastName"].ToString())); }
+
+            if (Exists(jResult, "ZipCode")) { usrInputResult.AppendLine(CreateCustomer.SetZipCode(jResult["ZipCode"].ToString())); }
+
+            if (Exists(jResult, "AddressLine1")) { usrInputResult.AppendLine(CreateCustomer.SetAddressLine1(jResult["AddressLine1"].ToString())); }
+
+            if (Exists(jResult, "AddressLine2")) { usrInputResult.AppendLine(CreateCustomer.SetAddressLine2(jResult["AddressLine2"].ToString())); }
+
+            if (Exists(jResult, "State")) { usrInputResult.AppendLine(CreateCustomer.SetState(jResult["State"].ToString())); }
+
+            if (Exists(jResult, "EmailAddress")) { usrInputResult.AppendLine(CreateCustomer.SetEmail(jResult["EmailAddress"].ToString())); }
+
+            if (Exists(jResult, "MobileNumber")) { usrInputResult.AppendLine(CreateCustomer.SetMobileNumber(jResult["MobileNumber"].ToString())); }
+
+            if (Exists(jResult, "DOB")) { usrInputResult.AppendLine(CreateCustomer.SetDateofBirth(jResult["DOB"].ToString())); }
+
+            if (Exists(jResult, "PPC")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalPropertyCoverage(jResult["PPC"].ToString())); }
+
+            if (Exists(jResult, "PLL")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalLiabilityLimit(jResult["PLL"].ToString())); }
+
+            if (Exists(jResult, "PD")) { usrInputResult.AppendLine(CustomerCoverage.SetPropertyDeduction(jResult["PD"].ToString())); }
+
+            if (Exists(jResult, "DTPOO")) { usrInputResult.AppendLine(CustomerCoverage.SetDamageToPropertyOfOthers(jResult["DTPOO"].ToString())); }
+
+            if (Exists(jResult, "PolicyEffectiveDate")) { usrInputResult.AppendLine(CustomerPolicy.SetPolicyEffectiveDate(jResult["PolicyEffectiveDate"].ToString())); }
+
+            if (Exists(jResult, "PolicyExpiryDate")) { usrInputResult.AppendLine(CustomerPolicy.SetPolicyExpiryDate(jResult["PolicyExpiryDate"].ToString())); }
+
+            if (Exists(jResult, "PO")) { usrInputResult.AppendLine(CustomerPolicy.SetPaymentOption(jResult["PO"].ToString())); }
+
+            return usrInputResult.ToString();
         }
-
-        //TODO Use one model to hold all properties.
         public static async void UpdateCustomerDetails(CustomerDto customerDetails)
         {
             try
@@ -113,7 +126,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 customerRecord["state"] = String.IsNullOrEmpty(CreateCustomer.Instance.State) ? String.Empty : CreateCustomer.Instance.State;
                 customerRecord["mobileNumber"] = String.IsNullOrEmpty(CreateCustomer.Instance.MobileNumber) ? String.Empty : CreateCustomer.Instance.MobileNumber;
                 customerRecord["emailAddress"] = String.IsNullOrEmpty(CreateCustomer.Instance.EmailAddress) ? String.Empty : CreateCustomer.Instance.EmailAddress;
-                
+
                 var getCustomer = await Invoke.PutAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer/", customerId.ToString(), HttpStatusCode.OK, customerRecord.ToString());
                 string getQuoteJson = await getCustomer.Content.ReadAsStringAsync();
                 if (getQuoteJson != "")

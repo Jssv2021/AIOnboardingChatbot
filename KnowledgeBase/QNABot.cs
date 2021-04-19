@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using ChatbotCustomerOnboarding;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using LaYumba.Functional;
-using static LaYumba.Functional.F;
+
 
 
 namespace KnowledgeBase
 {
-    public class QNAMaker
+    public class QNAMaker : GenericHelpers
     {
 
         /*Default Answers*/
@@ -79,53 +77,6 @@ namespace KnowledgeBase
              return (MessageFactoryText(defaultResponse));
 
          };
-
-        /*Generic utilites
-        /*Generic Message Text Factory*/
-
-        public static Option<string> ReadFileContent(string Path) { return File.Exists(Path) ? Some(File.ReadAllText(Path)) : None; }
-
-        static Option<string> ModifyJson(string contents, string propertyName, string properyValue)
-        {
-
-            var customerQuestion = JObjectParse(contents.ToString());
-
-            var ifExists = JObjectContainsKey(customerQuestion, propertyName).Match(Some: (e) => e, None: () => false);
-
-            if (ifExists)
-            {
-                customerQuestion[propertyName] = properyValue;
-
-                return Some(customerQuestion.ToString());
-            }
-            else
-            {
-                return None;
-            }
-        }
-
-        /*Generic ReadHttpResponse*/
-        public static Option<string> ResultString(HttpResponseMessage response) { return response.Content.ReadAsStringAsync().Result.ToString(); }
-
-        /*Generic Jobject Parse*/
-        public static Func<string, JObject> JObjectParse = (jsoncontent) => { return JObject.Parse(jsoncontent); };
-
-        public static Try<JObject> Parse(string s) => () => JObject.Parse(s);
-
-        /*Generic Jobject Contains*/
-        public static Option<bool> JObjectContainsKey(JObject responseObject, string key) { return responseObject.ContainsKey(key); }
-
-        /*Generic IsNotNull*/
-        public static Func<dynamic, bool> IfValueExists = (responseObject) => { return responseObject != null; };
-
-        /*Generic Deserilization*/
-        private static T Deserialize<T>(string jsonData)
-        {
-            return JsonConvert.DeserializeObject<T>(jsonData);
-        }
-
-        /*Genric HShoul*/
-        static Func<dynamic, bool> ShouldbeLessThan = (responseObject) => { return (responseObject != null); };
 
         /*Generic Message Text Factory*/
         public static Func<string, Microsoft.Bot.Schema.Activity> MessageFactoryText = (message) =>

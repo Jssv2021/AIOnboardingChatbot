@@ -10,6 +10,7 @@
       "type": "Input.Text",
       "placeholder": "First Name",
       "id": "FirstName",
+      "maxLength": 50,
       "validation": {
         "necessity": "Required",
         "errorMessage": "First Name is required"
@@ -18,12 +19,14 @@
     {
       "type": "Input.Text",
       "placeholder": "Middle Name",
-      "id": "MiddleName"
+      "id": "MiddleName",
+      "maxLength": 50,
     },
     {
       "type": "Input.Text",
       "placeholder": "Last Name",
       "id": "LastName",
+      "maxLength": 50,
       "validation": {
         "necessity": "Required",
         "errorMessage": "Last Name is required"
@@ -33,6 +36,7 @@
       "type": "Input.Text",
       "placeholder": "MobileNumber",
       "id": "MobileNumber",
+      "maxLength": 10,
       "validation": {
         "necessity": "Required",
         "errorMessage": "Mobile Number is required"
