@@ -47,8 +47,8 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 customerRecord["firstName"] = CreateCustomer.Instance.FirstName;
                 customerRecord["middleName"] = CreateCustomer.Instance.MiddleName;
                 customerRecord["lastName"] = CreateCustomer.Instance.LastName;
-                customerRecord["addressline1"] = $"{CreateCustomer.Instance.AddressLine1}";
-                customerRecord["addressline2"] = $"{CreateCustomer.Instance.AddressLine2}";
+                customerRecord["addressLine1"] = $"{CreateCustomer.Instance.AddressLine1}";
+                customerRecord["addressLine2"] = $"{CreateCustomer.Instance.AddressLine2}";
                 customerRecord["state"] = $"{CreateCustomer.Instance.State}";
                 customerRecord["mobileNumber"] = CreateCustomer.Instance.MobileNumber;
                 customerRecord["emailAddress"] = CreateCustomer.Instance.EmailAddress;

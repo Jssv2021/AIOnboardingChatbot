@@ -86,6 +86,20 @@ namespace Microsoft.BotBuilderSamples.Bots
                             await turnContext.SendActivityAsync(MessageFactory.Text($"{result} {errorHandlingText}"), cancellationToken);
                             return;
                         };
+
+                        if (_currentActiveCard == Card.QuoteCard)
+                        {
+
+                            result = await QuoteCard.GetQuote();
+                            if (result.Contains("Error"))
+                            {
+                                await turnContext.SendActivityAsync(MessageFactory.Text($"{result} {errorHandlingText} "), cancellationToken);
+                                return;
+                            };
+                            GetCustomer.Instance.Quote = result;
+                            _cardAttachment = CreateQuoteCardAttachment();
+                            cardFlag = true;
+                        }
                     }
                     if (_currentActiveCard == Card.RentersInsuranceCard) { var policy = await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
@@ -177,7 +191,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         //Edit user information
 
-        private static async Task UpdateUser(CustomerDto customerDto) 
+        private static async Task UpdateUser(CustomerDto customerDto)
         {
             CustomerInfo.UpdateCustomerDetails(customerDto);
             if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
