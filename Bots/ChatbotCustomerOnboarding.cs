@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveCards.Templating;
 using ChatbotCustomerOnboarding.BotHelpers;
 using ChatbotCustomerOnboarding.DataModel;
 using KnowledgeBase;
@@ -62,12 +64,25 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (cardType == Card.AdaptiveCard)
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse["button"].ToString()).Result.ToString();
-                    AddUserInputs(_userResponse);
+                    if (_currentActiveCard.Contains("Update"))
+                    {
+                        string customerEmail = _userResponse["emailAddress"];
+                        JToken response = (JToken)_userResponse;
+                        CustomerDto customerDto = (response.Count() > 2) ? JsonConvert.DeserializeObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomer(customerEmail);
+                        CustomerDto nextCardDto = await CustomerInfo.GetCustomer(customerEmail);
+                        _cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
+                        UpdateUser(customerDto);
+                        if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
+                        cardFlag = true;
+                    }
+                    else
+                    {
+                        AddUserInputs(_userResponse);
+                    }
                     if (_currentActiveCard == Card.QuoteCard) { GetCustomer.Instance.Quote = await QuoteCard.GetQuote(); _cardAttachment = CreateQuoteCardAttachment(); cardFlag = true; }
                     if (_currentActiveCard == Card.RentersInsuranceCard) { var policy = await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
-
                 else
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse.ToString()).Result.ToString();
@@ -83,8 +98,6 @@ namespace Microsoft.BotBuilderSamples.Bots
                 //ToDO add logger
             }
         }
-
-        //Welcome Message Attachment
 
         private static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -102,16 +115,31 @@ namespace Microsoft.BotBuilderSamples.Bots
         //Generic AdaptiveAttachment - For All adaptive cards
 
         private static Func<string, Attachment> CreateAdaptiveCardAttachment = (filePath) =>
-   {
-       var adaptiveCardJson = File.ReadAllText(filePath);
-       var adaptiveCardAttachment = new Attachment()
-       {
-           ContentType = "application/vnd.microsoft.card.adaptive",
-           Content = JsonConvert.DeserializeObject(adaptiveCardJson),
-       };
-       return adaptiveCardAttachment;
+        {
+            var adaptiveCardJson = File.ReadAllText(filePath);
+            var adaptiveCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
+            };
+            return adaptiveCardAttachment;
+        };
 
-   };
+        //Generic AdaptiveAttachment - For All adaptive cards
+
+        private static Func<CustomerDto, string, Attachment> CreateAdaptiveCardAttachmentDto = (customer, filePath) =>
+        {
+            var customerInformationAsJsonString = JsonConvert.SerializeObject(customer);
+            var adaptiveCardJson = File.ReadAllText(filePath);
+            AdaptiveCardTemplate template = new AdaptiveCardTemplate(adaptiveCardJson);
+            string cardJson = template.Expand(customer);
+            var adaptiveCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = JsonConvert.DeserializeObject(cardJson),
+            };
+            return adaptiveCardAttachment;
+        };
 
         //ThumbNail Attachments
 
@@ -139,6 +167,14 @@ namespace Microsoft.BotBuilderSamples.Bots
         //Add user input to data model
 
         private static Action<dynamic> AddUserInputs = (_userResponse) => { CustomerInfo.AddCustomerDetails(_userResponse); };
+
+        //Edit user information
+
+        private static async Task UpdateUser(CustomerDto customerDto) 
+        {
+            CustomerInfo.UpdateCustomerDetails(customerDto);
+            if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
+        }
 
         public static bool UserResponse()
         {

@@ -1,0 +1,32 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Please provide your email address so we can gather your information.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Email Address",
+      "id": "emailAddress",
+      "style": "email",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Email Address is required to proceed"
+      }
+    }
+
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Login",
+      "data": {
+        "button": "LoginWithEmailOK"
+      }
+    }
+  ]
+}

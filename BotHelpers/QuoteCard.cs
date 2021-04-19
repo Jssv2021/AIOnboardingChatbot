@@ -50,8 +50,11 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 //TODO 
                 customerRecord["zipCode"] = CreateCustomer.Instance.ZipCode;
                 customerRecord["firstName"] = CreateCustomer.Instance.FirstName;
+                customerRecord["middleName"] = CreateCustomer.Instance.MiddleName;
                 customerRecord["lastName"] = CreateCustomer.Instance.LastName;
-                customerRecord["streetAddress"] = $"{CreateCustomer.Instance.AddressLine1}{CreateCustomer.Instance.AddressLine2}";
+                customerRecord["addressline1"] = $"{CreateCustomer.Instance.AddressLine1}";
+                customerRecord["addressline2"] = $"{CreateCustomer.Instance.AddressLine2}";
+                customerRecord["state"] = $"{CreateCustomer.Instance.State}";
                 customerRecord["mobileNumber"] = CreateCustomer.Instance.MobileNumber;
                 customerRecord["emailAddress"] = CreateCustomer.Instance.EmailAddress;
                 var getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer", "", HttpStatusCode.Created, customerRecord.ToString());

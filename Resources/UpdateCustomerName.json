@@ -1,0 +1,71 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "value": "Please enter your First Name, Middle Name, and Last Name",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "label": "First Name",
+      "value": "${firstName}",
+      "id": "firstName",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "First Name is required"
+      }
+    },
+    {
+      "type": "Input.Text",
+      "label": "Middle Name",
+      "value": "${middleName}",
+      "id": "middleName"
+    },
+    {
+      "type": "Input.Text",
+      "label": "Last Name",
+      "value": "${lastName}",
+      "id": "lastName",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Last Name is required"
+      }
+    },
+    {
+      "type": "Input.Text",
+      "label": "Mobile Number",
+      "value": "${mobileNumber}",
+      "id": "mobileNumber",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Mobile Number is required"
+      }
+    },
+    {
+      "type": "Input.Text",
+      "value": "${emailAddress}",
+      "id": "emailAddress",
+      "isVisible": false
+    },
+    {
+      "type": "Input.Text",
+      "value": "${customerId}",
+      "id": "customerId",
+      "isVisible": false
+    }
+
+
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "UpdateCustomerNameOK"
+      }
+    }
+  ]
+}

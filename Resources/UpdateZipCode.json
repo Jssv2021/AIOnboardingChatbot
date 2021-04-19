@@ -1,0 +1,45 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Enter ZipCode",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "label": "Zip Code",
+      "value": "${zipCode}",
+      "min": 1,
+      "max": 10,
+      "id": "zipCode",
+      "validation": {
+        "necessity": "Required",
+        "errorMessage": "Zip Code is required"
+      }
+    },
+    {
+      "type": "Input.Text",
+      "value": "${emailAddress}",
+      "id": "emailAddress",
+      "isVisible": false
+    },
+    {
+      "type": "Input.Text",
+      "value": "${customerId}",
+      "id": "customerId",
+      "isVisible": false
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "button": "UpdateZipCodeOK"
+      }
+    }
+  ]
+}

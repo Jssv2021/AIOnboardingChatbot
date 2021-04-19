@@ -18,7 +18,13 @@ namespace ChatbotCustomerOnboarding.BotHelpers
     public class ConversationalFlow
     {
         private const string ExistingCustomer = "ExistingCustomer";
+        private const string UpdateCustomerNameCard = "UpdateCustomerNameOK";
+        private const string UpdateZipCodeCard = "UpdateZipCodeOK";
+        private const string UpdateDobCard = "UpdateDobOK";
+        private const string UpdateMailingAddressCard = "UpdateMailingAddressOK";
+        private const string UpdateFinalCard = "UpdateFinalOK";
         private const string NewCustomer = "NewCustomer";
+        private const string LoginWithEmailCard = "LoginWithEmailOK";
         private const string CustomerName = "CustomerNameOK";
         private const string Zip = "ZipCodeOK";
         private const string Dob = "DobOK";
@@ -30,7 +36,12 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         private const string EmailConfirmationOk = "emailConfirmOk";
 
         public static Func<string> NameCard = () => { return Path.Combine(".", "Resources", "InputCustomerName.json"); };
-        public static Func<string> NotSupported = () => { return Path.Combine(".", "Resources", "NotSupported.json"); };
+        public static Func<string> LoginWithEmail = () => { return Path.Combine(".", "Resources", "LoginWithEmail.json"); };
+        public static Func<string> UpdateCustomerName = () => { return Path.Combine(".", "Resources", "UpdateCustomerName.json"); };
+        public static Func<string> UpdateZipCode = () => { return Path.Combine(".", "Resources", "UpdateZipCode.json"); };
+        public static Func<string> UpdateDob = () => { return Path.Combine(".", "Resources", "UpdateDob.json"); };
+        public static Func<string> UpdateMailingAddress = () => { return Path.Combine(".", "Resources", "UpdateMailingAddress.json"); };
+        public static Func<string> UpdateFinal = () => { return Path.Combine(".", "Resources", "UpdateFinal.json"); };
         public static Func<string> ZipCode = () => { return Path.Combine(".", "Resources", "ZipCode.json"); };
         public static Func<string> DateOfBirth = () => { return Path.Combine(".", "Resources", "Dob.json"); };
         public static Func<string> MailingAddress = () => { return Path.Combine(".", "Resources", "MailingAddress.json"); };
@@ -46,7 +57,13 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             var customerType = inputMsg.ToString();
             var NextCardType = customerType switch
             {
-                ExistingCustomer => NotSupported(),
+                ExistingCustomer => LoginWithEmail(),
+                LoginWithEmailCard => UpdateCustomerName(),
+                UpdateCustomerNameCard => UpdateZipCode(),
+                UpdateZipCodeCard => UpdateDob(),
+                UpdateDobCard => UpdateMailingAddress(),
+                UpdateMailingAddressCard => UpdateFinal(),
+                UpdateFinalCard => Card.QuoteCard,
                 NewCustomer => NameCard(),
                 CustomerName => ZipCode(),
                 Zip => DateOfBirth(),
