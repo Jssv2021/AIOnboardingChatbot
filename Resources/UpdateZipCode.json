@@ -10,8 +10,7 @@
       "type": "Input.Text",
       "label": "Zip Code",
       "value": "${zipCode}",
-      "min": 1,
-      "max": 10,
+      "maxLength": 5,
       "id": "zipCode",
       "validation": {
         "necessity": "Required",

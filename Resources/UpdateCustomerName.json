@@ -11,6 +11,7 @@
       "label": "First Name",
       "value": "${firstName}",
       "id": "firstName",
+      "maxLength":  50,
       "validation": {
         "necessity": "Required",
         "errorMessage": "First Name is required"
@@ -20,13 +21,15 @@
       "type": "Input.Text",
       "label": "Middle Name",
       "value": "${middleName}",
-      "id": "middleName"
+      "id": "middleName",
+      "maxLength": 50
     },
     {
       "type": "Input.Text",
       "label": "Last Name",
       "value": "${lastName}",
       "id": "lastName",
+      "maxLength": 50,
       "validation": {
         "necessity": "Required",
         "errorMessage": "Last Name is required"
@@ -37,6 +40,7 @@
       "label": "Mobile Number",
       "value": "${mobileNumber}",
       "id": "mobileNumber",
+      "maxLength": 10,
       "validation": {
         "necessity": "Required",
         "errorMessage": "Mobile Number is required"

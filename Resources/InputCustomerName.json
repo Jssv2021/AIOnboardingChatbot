@@ -20,7 +20,7 @@
       "type": "Input.Text",
       "placeholder": "Middle Name",
       "id": "MiddleName",
-      "maxLength": 50,
+      "maxLength": 50
     },
     {
       "type": "Input.Text",
