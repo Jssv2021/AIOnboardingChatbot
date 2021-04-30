@@ -72,7 +72,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                         CustomerDto customerDto = (response.Count() > 2) ? JsonConvert.DeserializeObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomer(customerEmail);
                         CustomerDto nextCardDto = await CustomerInfo.GetCustomer(customerEmail);
                         _cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
-                        UpdateUser(customerDto);
+                        await UpdateUserAsync(customerDto);
                         if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
                         cardFlag = true;
                     }
@@ -191,7 +191,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         //Edit user information
 
-        private static async Task UpdateUser(CustomerDto customerDto)
+        private static async Task UpdateUserAsync(CustomerDto customerDto)
         {
             CustomerInfo.UpdateCustomerDetails(customerDto);
             if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
