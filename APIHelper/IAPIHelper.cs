@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LaYumba.Functional;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Enum = System.Enum;
 ///-----------------------------------------------------------------
 ///   Namespace:      <ChatbotCustomerOnboarding>
 ///   Interface:          <IAPIHelper>
@@ -15,9 +17,9 @@ namespace ChatbotCustomerOnboarding
 {
     public interface IAPIHelper
     {
-        public Task<HttpResponseMessage> GetAPI(string baseUrl, string uriPath, Enum responseCode, string tokenType = null, string ignoreError = null, string apimSubscriptionKey = null);
-        public Task<HttpResponseMessage> PostAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null, string subscriptionName = null, string authorization = null);
+        public Task<Option<HttpResponseMessage>> GetAPI(string baseUrl, string uriPath, Enum responseCode, string tokenType = null, string ignoreError = null, string apimSubscriptionKey = null);
+        public Task<Option<HttpResponseMessage>> PostAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null, string subscriptionName = null, string authorization = null);
         public Task<HttpResponseMessage> PatchAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null);
-        public Task<HttpResponseMessage> PutAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null);
+        public Task<Option<HttpResponseMessage>> PutAPI(string baseUrl, string uriPath, Enum responseCode, string payload, string apimSubscriptionKey = null);
     }
 }

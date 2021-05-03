@@ -12,16 +12,16 @@ namespace ChatbotCustomerOnboarding.DataModel
         }
 
         /*fields*/
-        private string _firstName;
-        private string _lastName;
-        private string _middleName;
-        private string _zipCode;
-        private string _addressLine1;
-        private string _addressLine2;
-        private string _state;
-        private string _dateofbirth;
-        private string _mobileNmber;
-        private string _emailAddress;
+        private string _firstName = "";
+        private string _lastName = "";
+        private string _middleName = "";
+        private string _zipCode = "";
+        private string _addressLine1 = "";
+        private string _addressLine2 = "";
+        private string _state = "";
+        private string _dateofbirth = "";
+        private string _mobileNmber = "";
+        private string _emailAddress = "";
 
         /*Class instance*/
         private static CreateCustomer instance = null;
@@ -56,114 +56,81 @@ namespace ChatbotCustomerOnboarding.DataModel
         public static Func<string, string> SetEmail = (emailAddress) =>
         {
             var result = Email.Create(emailAddress).Match(Some: (e) => e, None: () => IsInvalid);
-
             if (result == IsInvalid) return $"{IsInvalid}:Email ID entered {emailAddress} {Errors.Message}: ";
-
             CreateCustomer.Instance.EmailAddress = emailAddress;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetFirstName = (name) =>
         {
             var result = Validator.IsAlpha(name) ? name : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: First Name: {name} {Errors.Message}";
-
             CreateCustomer.Instance.FirstName = name;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetMiddleName = (name) =>
         {
             string result = "";
-
             if (name.Length > 0) { result = Validator.IsAlpha(name) ? name : IsInvalid; }
-
             if (result == IsInvalid) return $"{IsInvalid}: MiddleName {name} {Errors.Message}";
-
             CreateCustomer.Instance.MiddleName = name;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetLastName = (name) =>
         {
             var result = Validator.IsAlpha(name) ? name : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: LastName {name} {Errors.Message}: ";
-
             CreateCustomer.Instance.LastName = name;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetState = (state) =>
         {
             var result = Validator.IsAlpha(state) ? state : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: state {state} {Errors.Message}";
-
             CreateCustomer.Instance.State = state;
-
             return Isvalid;
         };
-
 
         public static Func<string, string> SetZipCode = (zipCode) =>
         {
             var result = Validator.IsZipCode(zipCode) ? zipCode : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: zipCode {zipCode} {Errors.Message}";
-
             CreateCustomer.Instance.ZipCode = zipCode;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetDateofBirth = (dob) =>
         {
             var result = Date.Parse(dob).Match(Some: (e) => e, None: () => defaultTime);
-
             if (result == defaultTime) return $"{IsInvalid}:dob {dob} {Errors.Message}";
-
             CreateCustomer.Instance.DateOfBirth = dob;
-
             return Isvalid;
         };
-
 
         public static Func<string, string> SetMobileNumber = (mobileNumber) =>
         {
             var result = Validator.IsMobile(mobileNumber) ? mobileNumber : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: mobileNumber {mobileNumber} {Errors.Message}";
-
             CreateCustomer.Instance.MobileNumber = mobileNumber;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetAddressLine1 = (line1) =>
         {
             var result = Validator.IsAddress(line1) ? line1 : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}:line1 {line1} {Errors.Message}";
-
             CreateCustomer.Instance.AddressLine1 = line1;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetAddressLine2 = (line2) =>
         {
             var result = Validator.IsAphaNumeric(line2) ? line2 : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}:line2 {line2} {Errors.Message}";
-
             CreateCustomer.Instance.AddressLine2 = line2;
-
             return Isvalid;
         };
 

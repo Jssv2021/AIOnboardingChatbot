@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using LaYumba.Functional;
@@ -56,6 +57,22 @@ namespace ChatbotCustomerOnboarding
         public static T Deserialize<T>(string jsonData)
         {
             return JsonConvert.DeserializeObject<T>(jsonData);
+        }
+
+        public static Option<T> ConvertToObject<T>(string json)
+        {
+            List<string> errors = new List<string>();
+            T t = JsonConvert.DeserializeObject<T>(
+                json.ToString(),
+                new JsonSerializerSettings
+                {
+                    Error = (sender, args) =>
+                    {
+                        errors.Add(args.ErrorContext.Error.Message);
+                        args.ErrorContext.Handled = true;
+                    }
+                });
+            return errors.Count == 0 ? Some(t) : None;
         }
 
         /*Genric HShoul*/

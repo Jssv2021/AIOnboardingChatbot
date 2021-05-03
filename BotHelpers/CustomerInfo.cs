@@ -7,11 +7,15 @@ using ChatbotCustomerOnboarding.DataModel;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-
+using LaYumba.Functional;
+using System.Net.Http;
+using String = System.String;
+using System.Collections.Generic;
 
 namespace ChatbotCustomerOnboarding.BotHelpers
 {
+    using static F;
+
     /* Add user input to the Customer dto models/
    ///-----------------------------------------------------------------
    ///   Namespace:      <ChatbotCustomerOnboarding>
@@ -25,124 +29,108 @@ namespace ChatbotCustomerOnboarding.BotHelpers
 
     public class CustomerInfo : GenericHelpers
     {
-        public async static Task<CustomerDto> GetCustomer(string emailAddress)
+        public static Func<string, Task<Option<CustomerDto>>> GetCustomerAsync = async (emailAddress) =>
         {
-            try
-            {
-                IAPIHelper Invoke = new APIHelper();
-                var customerInfoResponse = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer/GetByEmail/", emailAddress, HttpStatusCode.OK);
-                string customerInfoJson = await customerInfoResponse.Content.ReadAsStringAsync();
-                if (customerInfoJson != "")
-                {
-                    CustomerDto getCustomer = JsonConvert.DeserializeObject<CustomerDto>(customerInfoJson);
-                    return getCustomer;
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString()); //Replace with Logger TODO
-                return null;
-            }
-        }
+            Option<Email> email = Email.Validate(emailAddress); //Run Validate function to ensure email address is correct
+            Option<string> customerJson =  
+                await email.Match(
+                    None: async () => await ReportEmailError(),
+                    Some: async (e) => await GetCustomerJsonByEmailAsync(e.ToString())
+                );
+            Option<CustomerDto> customer = customerJson.Bind(e => ConvertToObject<CustomerDto>(e));
+            return customer;
+        };
+
+        private static Func<Task<string>> ReportEmailError = async () => "There was an error with the email address submitted.";
+
+        private static Func<string, Task<string>> GetCustomerJsonByEmailAsync = async (e) =>
+        {
+            IAPIHelper Invoke = new APIHelper();
+            Option<HttpResponseMessage> customerInfoResponse = await Invoke.GetAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer/GetByEmail/", e, HttpStatusCode.OK);
+            return
+                await customerInfoResponse.Match(
+                    None: () => ReportNotFound(),
+                    Some: async (r) => await r.Content.ReadAsStringAsync()
+                );
+        };
+
+        private static Func<Task<string>> ReportNotFound = async () => "That email address does not belong to a current customer.";
 
         //TODO Use one model to hold all properties.
         public static string AddCustomerDetails(JToken customerDetails)
         {
-
             var jResult = JObjectParse(customerDetails.ToString());
-
             var usrInputResult = new StringBuilder();
-
             if (Exists(jResult, "FirstName")) { usrInputResult.AppendLine(CreateCustomer.SetFirstName(jResult["FirstName"].ToString())); }
-
             if (Exists(jResult, "MiddleName")) { usrInputResult.AppendLine(CreateCustomer.SetMiddleName(jResult["MiddleName"].ToString())); }
-
             if (Exists(jResult, "LastName")) { usrInputResult.AppendLine(CreateCustomer.SetLastName(jResult["LastName"].ToString())); }
-
             if (Exists(jResult, "ZipCode")) { usrInputResult.AppendLine(CreateCustomer.SetZipCode(jResult["ZipCode"].ToString())); }
-
             if (Exists(jResult, "AddressLine1")) { usrInputResult.AppendLine(CreateCustomer.SetAddressLine1(jResult["AddressLine1"].ToString())); }
-
             if (Exists(jResult, "AddressLine2")) { usrInputResult.AppendLine(CreateCustomer.SetAddressLine2(jResult["AddressLine2"].ToString())); }
-
             if (Exists(jResult, "State")) { usrInputResult.AppendLine(CreateCustomer.SetState(jResult["State"].ToString())); }
-
             if (Exists(jResult, "EmailAddress")) { usrInputResult.AppendLine(CreateCustomer.SetEmail(jResult["EmailAddress"].ToString())); }
-
             if (Exists(jResult, "MobileNumber")) { usrInputResult.AppendLine(CreateCustomer.SetMobileNumber(jResult["MobileNumber"].ToString())); }
-
             if (Exists(jResult, "DOB")) { usrInputResult.AppendLine(CreateCustomer.SetDateofBirth(jResult["DOB"].ToString())); }
-
             if (Exists(jResult, "PPC")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalPropertyCoverage(jResult["PPC"].ToString())); }
-
             if (Exists(jResult, "PLL")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalLiabilityLimit(jResult["PLL"].ToString())); }
-
             if (Exists(jResult, "PD")) { usrInputResult.AppendLine(CustomerCoverage.SetPropertyDeduction(jResult["PD"].ToString())); }
-
             if (Exists(jResult, "DTPOO")) { usrInputResult.AppendLine(CustomerCoverage.SetDamageToPropertyOfOthers(jResult["DTPOO"].ToString())); }
-
             if (Exists(jResult, "PolicyEffectiveDate")) { usrInputResult.AppendLine(CustomerPolicy.SetPolicyEffectiveDate(jResult["PolicyEffectiveDate"].ToString())); }
-
             if (Exists(jResult, "PolicyExpiryDate")) { usrInputResult.AppendLine(CustomerPolicy.SetPolicyExpiryDate(jResult["PolicyExpiryDate"].ToString())); }
-
             if (Exists(jResult, "PO")) { usrInputResult.AppendLine(CustomerPolicy.SetPaymentOption(jResult["PO"].ToString())); }
-
             return usrInputResult.ToString();
         }
+
         public static async void UpdateCustomerDetails(CustomerDto customerDetails)
         {
-            try
-            {
-                CreateCustomer.Instance.FirstName = !String.IsNullOrEmpty(customerDetails.firstName) ? customerDetails.firstName : CreateCustomer.Instance.FirstName;
-                CreateCustomer.Instance.MiddleName = !String.IsNullOrEmpty(customerDetails.middleName) ? customerDetails.middleName : CreateCustomer.Instance.MiddleName;
-                CreateCustomer.Instance.LastName = !String.IsNullOrEmpty(customerDetails.lastName) ? customerDetails.lastName : CreateCustomer.Instance.LastName;
-                CreateCustomer.Instance.ZipCode = !String.IsNullOrEmpty(customerDetails.zipCode) ? customerDetails.zipCode : CreateCustomer.Instance.ZipCode;
-                CreateCustomer.Instance.AddressLine1 = !String.IsNullOrEmpty(customerDetails.addressLine1) ? customerDetails.addressLine1 : CreateCustomer.Instance.AddressLine1;
-                CreateCustomer.Instance.AddressLine2 = !String.IsNullOrEmpty(customerDetails.addressLine2) ? customerDetails.addressLine2 : CreateCustomer.Instance.AddressLine2;
-                CreateCustomer.Instance.State = !String.IsNullOrEmpty(customerDetails.state) ? customerDetails.state : CreateCustomer.Instance.State;
-                CreateCustomer.Instance.MobileNumber = !String.IsNullOrEmpty(customerDetails.mobileNumber) ? customerDetails.mobileNumber : CreateCustomer.Instance.MobileNumber;
-                CreateCustomer.Instance.EmailAddress = !String.IsNullOrEmpty(customerDetails.emailAddress) ? customerDetails.emailAddress : CreateCustomer.Instance.EmailAddress;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            CreateCustomer.Instance.FirstName = ThisOrThat(CreateCustomer.Instance.FirstName, customerDetails.firstName);
+            CreateCustomer.Instance.MiddleName = ThisOrThat(CreateCustomer.Instance.MiddleName, customerDetails.middleName);
+            CreateCustomer.Instance.LastName = ThisOrThat(CreateCustomer.Instance.LastName, customerDetails.lastName);
+            CreateCustomer.Instance.ZipCode = ThisOrThat(CreateCustomer.Instance.ZipCode, customerDetails.zipCode);
+            CreateCustomer.Instance.AddressLine1 = ThisOrThat(CreateCustomer.Instance.AddressLine1, customerDetails.addressLine1);
+            CreateCustomer.Instance.AddressLine2 = ThisOrThat(CreateCustomer.Instance.AddressLine2, customerDetails.addressLine2);
+            CreateCustomer.Instance.State = ThisOrThat(CreateCustomer.Instance.State, customerDetails.state);
+            CreateCustomer.Instance.MobileNumber = ThisOrThat(CreateCustomer.Instance.MobileNumber, customerDetails.mobileNumber);
+            CreateCustomer.Instance.EmailAddress = ThisOrThat(CreateCustomer.Instance.EmailAddress, customerDetails.emailAddress);
         }
+
+        private static Func<string, string, string> ThisOrThat = (@this, that) =>
+        {
+            Option<string> val = String.IsNullOrEmpty(that) ? None : Some(that);
+            return val.Match(
+                None: () => @this,
+                Some: (t) => that
+            );
+        };
 
         public static async Task<string> UpdateAndSave(string customerId)
         {
-            try
-            {
-                IAPIHelper Invoke = new APIHelper();
-                JObject customerRecord = JObject.Parse(File.ReadAllText(Path.Combine(".", "JsonTemplate", "CreateCustomer.json")));
-                //TODO 
-                customerRecord["zipCode"] = String.IsNullOrEmpty(CreateCustomer.Instance.ZipCode) ? String.Empty : CreateCustomer.Instance.ZipCode;
-                customerRecord["firstName"] = String.IsNullOrEmpty(CreateCustomer.Instance.FirstName) ? String.Empty : CreateCustomer.Instance.FirstName;
-                customerRecord["middleName"] = String.IsNullOrEmpty(CreateCustomer.Instance.MiddleName) ? String.Empty : CreateCustomer.Instance.MiddleName;
-                customerRecord["lastName"] = String.IsNullOrEmpty(CreateCustomer.Instance.LastName) ? String.Empty : CreateCustomer.Instance.LastName;
-                customerRecord["addressLine1"] = String.IsNullOrEmpty(CreateCustomer.Instance.AddressLine1) ? String.Empty : CreateCustomer.Instance.AddressLine1;
-                customerRecord["addressLine2"] = String.IsNullOrEmpty(CreateCustomer.Instance.AddressLine2) ? String.Empty : CreateCustomer.Instance.AddressLine2;
-                customerRecord["state"] = String.IsNullOrEmpty(CreateCustomer.Instance.State) ? String.Empty : CreateCustomer.Instance.State;
-                customerRecord["mobileNumber"] = String.IsNullOrEmpty(CreateCustomer.Instance.MobileNumber) ? String.Empty : CreateCustomer.Instance.MobileNumber;
-                customerRecord["emailAddress"] = String.IsNullOrEmpty(CreateCustomer.Instance.EmailAddress) ? String.Empty : CreateCustomer.Instance.EmailAddress;
-
-                var getCustomer = await Invoke.PutAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer/", customerId.ToString(), HttpStatusCode.OK, customerRecord.ToString());
-                string getQuoteJson = await getCustomer.Content.ReadAsStringAsync();
-                if (getQuoteJson != "")
-                {
-                    var getCustomerInfo = JsonConvert.DeserializeObject<GetCustomer>(getQuoteJson.ToString());
-                    CreateCustomer.Instance.CustomerId = Convert.ToInt32(getCustomerInfo.CustomerId);
-                    return getCustomerInfo.CustomerId.ToString();
-
-                }
-                return null;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString()); //Replace with Logger TODO
-                return null;
-            }
+            IAPIHelper Invoke = new APIHelper();
+            JObject customerRecord = JObject.Parse(File.ReadAllText(Path.Combine(".", "JsonTemplate", "CreateCustomer.json")));
+            customerRecord["zipCode"] = ThisOrThat(CreateCustomer.Instance.ZipCode, String.Empty);
+            customerRecord["firstName"] = ThisOrThat(CreateCustomer.Instance.FirstName, String.Empty);
+            customerRecord["middleName"] = ThisOrThat(CreateCustomer.Instance.MiddleName, String.Empty);
+            customerRecord["lastName"] = ThisOrThat(CreateCustomer.Instance.LastName, String.Empty);
+            customerRecord["addressLine1"] = ThisOrThat(CreateCustomer.Instance.AddressLine1, String.Empty);
+            customerRecord["addressLine2"] = ThisOrThat(CreateCustomer.Instance.AddressLine2, String.Empty);
+            customerRecord["state"] = ThisOrThat(CreateCustomer.Instance.State, String.Empty);
+            customerRecord["mobileNumber"] = ThisOrThat(CreateCustomer.Instance.MobileNumber, String.Empty);
+            customerRecord["emailAddress"] = ThisOrThat(CreateCustomer.Instance.EmailAddress, String.Empty);
+            Option<HttpResponseMessage> response = await Invoke.PutAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer/", customerId.ToString(), HttpStatusCode.OK, customerRecord.ToString());
+            string customerJson = 
+                await response.Match(
+                    None: () => ReportNotFound(),
+                    Some: async (r) => await r.Content.ReadAsStringAsync()
+                );
+            Option<GetCustomer> customer = ConvertToObject<GetCustomer>(customerJson);
+            CreateCustomer.Instance.CustomerId = customer.Match(
+                None: () => 0,
+                Some: (c) => Convert.ToInt32(c.CustomerId)
+            );
+            return customer.Match(
+                None: () => "An error occurred. Your information has not been updated.",
+                Some: (c) => c.CustomerId.ToString()
+            );
         }
     }
 }

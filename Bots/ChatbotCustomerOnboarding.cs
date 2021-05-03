@@ -8,6 +8,7 @@ using AdaptiveCards.Templating;
 using ChatbotCustomerOnboarding.BotHelpers;
 using ChatbotCustomerOnboarding.DataModel;
 using KnowledgeBase;
+using LaYumba.Functional;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -23,6 +24,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    using static F;
+
     public class ChatbotCustomerOnboard : ActivityHandler
     {
 
@@ -51,7 +54,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 //Call to Knowledge Base
                 if (turnContext.Activity.TextFormat != null)
                 {
-                    var userResponse = QNAMaker.KnowledgeBase(turnContext);
+                    var userResponse = await QNAMaker.KnowledgeBase(turnContext);
                     await turnContext.SendActivityAsync(userResponse, cancellationToken);
                     return;
                 };
@@ -69,11 +72,17 @@ namespace Microsoft.BotBuilderSamples.Bots
                     {
                         string customerEmail = _userResponse["emailAddress"];
                         JToken response = (JToken)_userResponse;
-                        CustomerDto customerDto = (response.Count() > 2) ? JsonConvert.DeserializeObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomer(customerEmail);
-                        CustomerDto nextCardDto = await CustomerInfo.GetCustomer(customerEmail);
-                        _cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
-                        await UpdateUserAsync(customerDto);
-                        if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
+                        Option<CustomerDto> customerDto = (response.Count() > 2) ? CustomerInfo.ConvertToObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomerAsync(customerEmail);
+                        Option<CustomerDto> nextCardDto = await CustomerInfo.GetCustomerAsync(customerEmail);
+                        _cardAttachment = nextCardDto.Match(
+                            None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
+                            Some: (n) => CreateAdaptiveCardAttachmentDto(n, _currentActiveCard)
+                        );
+                        //_cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
+                        customerDto.Match(
+                            None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
+                            Some: async (c) => await UpdateCustomerAndSaveIfFinal(c)
+                        );
                         cardFlag = true;
                     }
                     else
@@ -101,7 +110,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                             cardFlag = true;
                         }
                     }
-                    if (_currentActiveCard == Card.RentersInsuranceCard) { var policy = await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
+                    if (_currentActiveCard == Card.RentersInsuranceCard) { await QuoteCard.CreatePolicy(); _cardAttachment = CreateRentersInsuranceCardAttachment(); cardFlag = true; }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
                 else
@@ -118,6 +127,12 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Console.WriteLine(e.ToString());
                 //ToDO add logger
             }
+        }
+
+        private async Task UpdateCustomerAndSaveIfFinal(CustomerDto customerDto)
+        {
+            await UpdateUserAsync(customerDto);
+            if (_currentActiveCard.Contains("Final")) await CustomerInfo.UpdateAndSave(customerDto.customerId);
         }
 
         private static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)

@@ -24,7 +24,8 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         private const string UpdateMailingAddressCard = "UpdateMailingAddressOK";
         private const string UpdateFinalCard = "UpdateFinalOK";
         private const string NewCustomer = "NewCustomer";
-        private const string LoginWithEmailCard = "LoginWithEmailOK";
+        private const string LoginWithEmailCard = "LoginWithEmailNotFoundOK";
+        private const string LoginWithEmailNotFoundCard = "LoginWithEmailOK";
         private const string CustomerName = "CustomerNameOK";
         private const string Zip = "ZipCodeOK";
         private const string Dob = "DobOK";
@@ -37,6 +38,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
 
         public static Func<string> NameCard = () => { return Path.Combine(".", "Resources", "InputCustomerName.json"); };
         public static Func<string> LoginWithEmail = () => { return Path.Combine(".", "Resources", "LoginWithEmail.json"); };
+        public static Func<string> LoginWithEmailNotFound = () => { return Path.Combine(".", "Resources", "LoginWithEmailNotFound.json"); };
         public static Func<string> UpdateCustomerName = () => { return Path.Combine(".", "Resources", "UpdateCustomerName.json"); };
         public static Func<string> UpdateZipCode = () => { return Path.Combine(".", "Resources", "UpdateZipCode.json"); };
         public static Func<string> UpdateDob = () => { return Path.Combine(".", "Resources", "UpdateDob.json"); };
@@ -59,6 +61,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             {
                 ExistingCustomer => LoginWithEmail(),
                 LoginWithEmailCard => UpdateCustomerName(),
+                LoginWithEmailNotFoundCard => UpdateCustomerName(),
                 UpdateCustomerNameCard => UpdateZipCode(),
                 UpdateZipCodeCard => UpdateDob(),
                 UpdateDobCard => UpdateMailingAddress(),

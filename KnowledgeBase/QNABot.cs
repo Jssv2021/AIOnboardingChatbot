@@ -7,20 +7,23 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using LaYumba.Functional;
-
-
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace KnowledgeBase
 {
+    using static F;
+
     public class QNAMaker : GenericHelpers
     {
 
         /*Default Answers*/
         const string defaultResponse = "No answers were found. Try different words or Type 'connect' to chat with an agent";
         const string kbDefaultResponse = "No good match found in KB.";
+        private static Func<Task<string>> ReportError = async () => "An error occurred.";
 
 
-        public static Func<ITurnContext<IMessageActivity>, dynamic> KnowledgeBase = (userString) =>
+        public static Func<ITurnContext<IMessageActivity>, Task<Activity>> KnowledgeBase = async (userString) =>
          {
 
              /* QNA Maker Connection */
@@ -38,16 +41,19 @@ namespace KnowledgeBase
 
              /* Invoke QNA Maker*/
              /*Read and Parse QNA Maker Response*/
-             var response = Invoke.PostAPI(baseUrl, uriPath, HttpStatusCode.OK, getCustomerResponse.Match(Some: (e) => e, None: () => "None"), null, null, authorization);
-             var jsonString = ResultString(response.Result);
-             Root deserializedResponse = Deserialize<Root>(jsonString.Match(Some: (e) => e, None: () => "None"));
+             Option<HttpResponseMessage> response = await Invoke.PostAPI(baseUrl, uriPath, HttpStatusCode.OK, getCustomerResponse.Match(Some: (e) => e, None: () => "None"), null, null, authorization);
+             string jsonString = await response.Match(
+                    None: () => ReportError(),
+                    Some: async (r) => await r.Content.ReadAsStringAsync()
+             );
+             Root deserializedResponse = Deserialize<Root>(jsonString);
              var reply = IfValueExists(deserializedResponse) && IfValueExists(deserializedResponse.answers[0]) ? deserializedResponse.answers[0] : default;
              if (reply == default) return MessageFactoryText(defaultResponse);
 
 
              /*Followup Response*/
              // Followup Check Results
-             var followUpCheckResult = Deserialize<FollowUpCheckResult>(jsonString.Match(Some: (e) => e, None: () => "None"));
+             var followUpCheckResult = Deserialize<FollowUpCheckResult>(jsonString);
 
              if (IfValueExists(deserializedResponse.answers) && IfValueExists(deserializedResponse.answers[0].context))
              {
