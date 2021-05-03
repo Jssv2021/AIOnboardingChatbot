@@ -137,15 +137,10 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            foreach (var member in turnContext.Activity.MembersAdded)
-            {
-                if (member.Id != turnContext.Activity.Recipient.Id)
-                {
-                    var cardAttachment = CreateAdaptiveCardAttachment(_cards);
+            var cardAttachment = CreateAdaptiveCardAttachment(_cards);
 
-                    await turnContext.SendActivityAsync(MessageFactory.Attachment(cardAttachment), cancellationToken);
-                }
-            }
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(cardAttachment), cancellationToken);
+
         }
 
         //Generic AdaptiveAttachment - For All adaptive cards
