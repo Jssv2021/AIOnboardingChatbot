@@ -83,10 +83,12 @@ namespace ChatbotCustomerOnboarding.BotHelpers
 
         public static async void UpdateCustomerDetails(CustomerDto customerDetails)
         {
+            CreateCustomer.Instance.CustomerId = Convert.ToInt32(ThisOrThat(CreateCustomer.Instance.CustomerId.ToString(), customerDetails.customerId));
             CreateCustomer.Instance.FirstName = ThisOrThat(CreateCustomer.Instance.FirstName, customerDetails.firstName);
             CreateCustomer.Instance.MiddleName = ThisOrThat(CreateCustomer.Instance.MiddleName, customerDetails.middleName);
             CreateCustomer.Instance.LastName = ThisOrThat(CreateCustomer.Instance.LastName, customerDetails.lastName);
             CreateCustomer.Instance.ZipCode = ThisOrThat(CreateCustomer.Instance.ZipCode, customerDetails.zipCode);
+            CreateCustomer.Instance.DateOfBirth = ThisOrThat(CreateCustomer.Instance.DateOfBirth, customerDetails.dateOfBirth.ToString("yyyy-MM-ddTHH:mm:sszzz"));
             CreateCustomer.Instance.AddressLine1 = ThisOrThat(CreateCustomer.Instance.AddressLine1, customerDetails.addressLine1);
             CreateCustomer.Instance.AddressLine2 = ThisOrThat(CreateCustomer.Instance.AddressLine2, customerDetails.addressLine2);
             CreateCustomer.Instance.State = ThisOrThat(CreateCustomer.Instance.State, customerDetails.state);
@@ -111,6 +113,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             customerRecord["firstName"] = ThisOrThat(CreateCustomer.Instance.FirstName, String.Empty);
             customerRecord["middleName"] = ThisOrThat(CreateCustomer.Instance.MiddleName, String.Empty);
             customerRecord["lastName"] = ThisOrThat(CreateCustomer.Instance.LastName, String.Empty);
+            customerRecord["dateOfBirth"] = ThisOrThat(CreateCustomer.Instance.DateOfBirth, String.Empty);
             customerRecord["addressLine1"] = ThisOrThat(CreateCustomer.Instance.AddressLine1, String.Empty);
             customerRecord["addressLine2"] = ThisOrThat(CreateCustomer.Instance.AddressLine2, String.Empty);
             customerRecord["state"] = ThisOrThat(CreateCustomer.Instance.State, String.Empty);

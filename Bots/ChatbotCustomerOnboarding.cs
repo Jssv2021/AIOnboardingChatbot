@@ -116,7 +116,14 @@ namespace Microsoft.BotBuilderSamples.Bots
                 else
                 {
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse.ToString()).Result.ToString();
-                    if (_currentActiveCard == Card.EmailConfirmationCard) { var customerInfo = await QuoteCard.CreateCustomerRentersInsurance(); _cardAttachment = QuoteCardAttachment(); cardFlag = true; }
+                    if (_currentActiveCard == Card.EmailConfirmationCard) 
+                    {
+                        if (CreateCustomer.Instance.CustomerId == 0)
+                        {
+                            var customerInfo = await QuoteCard.CreateCustomerRentersInsurance(); 
+                        }                        
+                        _cardAttachment = QuoteCardAttachment(); cardFlag = true;
+                    }
                     if (!cardFlag) _cardAttachment = CreateAdaptiveCardAttachment(_currentActiveCard);
                 }
 

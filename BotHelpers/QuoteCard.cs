@@ -136,6 +136,9 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 None: () => 0,
                 Some: (c) => Convert.ToInt32(c.PolicyNumber)
             );
+            Stream stream = await Invoke.GeneratePdfAsync(CreateCustomer.Instance.CustomerId);
+            System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(stream, "policy.pdf");
+            var emailFlag = EmailService.SendEmail(GetCustomer.Instance.Quote, attachment);
         }
 
         public static Attachment QuoteSummary()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -75,6 +76,15 @@ namespace ChatbotCustomerOnboarding
             httpRequestMessage.Content = (HttpContent)new StringContent(payload, Encoding.UTF8, contentType);
             Option<HttpResponseMessage> httpResponseMessage = await client.SendAsync(httpRequestMessage);
             return httpResponseMessage.Match<HttpResponseMessage>(Some: (s) => s, None: null);
+        }
+
+        public async Task<Stream> GeneratePdfAsync(int id)
+        {
+            var client = new HttpClient();
+            var query = $"http://ai-customer-onboarding-pdfgen-dev.azurewebsites.net/{id}";
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, query);
+            HttpResponseMessage returnResponse = await client.SendAsync(httpRequestMessage);
+            return await returnResponse.Content.ReadAsStreamAsync();
         }
 
 
