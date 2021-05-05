@@ -128,7 +128,7 @@ namespace ChatbotCustomerOnboarding.DataModel
 
         public static Func<string, string> SetAddressLine2 = (line2) =>
         {
-            var result = Validator.IsAphaNumeric(line2) ? line2 : IsInvalid;
+            var result = Validator.IsAphaNumeric(line2) || string.IsNullOrEmpty(line2) ? line2 : IsInvalid;
             if (result == IsInvalid) return $"{IsInvalid}:line2 {line2} {Errors.Message}";
             CreateCustomer.Instance.AddressLine2 = line2;
             return Isvalid;
