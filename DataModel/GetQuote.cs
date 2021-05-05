@@ -10,8 +10,11 @@ namespace ChatbotCustomerOnboarding.DataModel
     public static class Card
     {
         private static string quoteCard = "QuoteCard";
+        private static string updateQuoteCard = "UpdateQuoteCard";
         private static string renterInsSummary = "RentersInsuranceSummary";
+        private static string updateRenterInsSummary = "UpdateRentersInsuranceSummary";
         private static string emailConfirmation = "EmailConfirmation";
+        private static string updateEmailConfirmation = "UpdateEmailConfirmation";
         private static string adaptiveCard = "AdaptiveCard";
         private static string thumbnailCard = "ThumbNailCard";
         private static string quoteCardButton = "QuoteCardOk";
@@ -25,31 +28,54 @@ namespace ChatbotCustomerOnboarding.DataModel
             set { quoteCard = value; }
         }
 
+        public static string UpdateQuoteCard
+        {
+            get { return updateQuoteCard; }
+            set { updateQuoteCard = value; }
+        }
+
         public static string RentersInsuranceCard
         {
             get { return renterInsSummary; }
             set { renterInsSummary = value; }
         }
+
+        public static string UpdateRentersInsuranceCard
+        {
+            get { return updateRenterInsSummary; }
+            set { updateRenterInsSummary = value; }
+        }
+
         public static string EmailConfirmationCard
         {
             get { return emailConfirmation; }
             set { emailConfirmation = value; }
         }
+
+        public static string UpdateEmailConfirmationCard
+        {
+            get { return updateEmailConfirmation; }
+            set { updateEmailConfirmation = value; }
+        }
+
         public static string AdaptiveCard
         {
             get { return adaptiveCard; }
             set { adaptiveCard = value; }
         }
+
         public static string ThumbNailCard
         {
             get { return thumbnailCard; }
             set { thumbnailCard = value; }
         }
+
         public static string QuoteCardButton
         {
             get { return quoteCardButton; }
             set { quoteCardButton = value; }
         }
+
         public static string EmailCardButton
         {
             get { return emailCardButton; }

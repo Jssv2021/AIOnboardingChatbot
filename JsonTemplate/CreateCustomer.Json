@@ -2,6 +2,8 @@
   "firstName": "string",
   "middleName": "string",
   "lastName": "string",
+  "addressLine1": "string",
+  "addressLine2": "string",
   "dateOfBirth": "2021-03-03T05:20:45.757Z",
   "state": "string",
   "zipCode": "string",

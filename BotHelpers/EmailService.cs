@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -34,8 +35,8 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 string emailFrom = "projectswen2021@yahoo.com";
                 string password = "gmsakxqsnihlkugb";
                 string emailTo = CreateCustomer.Instance.EmailAddress.ToString();
-                string subject = $"Here is your Quote: {quoteCustomer} CustomerID: {CreateCustomer.Instance.CustomerId}";
-                string body = "CustomerName: " + CreateCustomer.Instance.FirstName + " " + CreateCustomer.Instance.LastName + "\n";
+                string subject = $"Your Personalized Renter's Insurance Quote";
+                string body = $"{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.LastName}, here is your Personalized Renter's Insurance Quote: {Convert.ToDecimal(quoteCustomer).ToString("C2", CultureInfo.CurrentCulture)}\r\n\r\n";
                 body += "Email: " + CreateCustomer.Instance.EmailAddress + "\n";
                 body += "Message: \n" + "Demo: Onboarding Customer feature 2 Assignment" + "\n";
                 //   string[] cc = { "PetrenkoO6197@UHCL.edu", "ObryantJ2383@UHCL.edu", "murukutlas3934@uhcl.edu" };

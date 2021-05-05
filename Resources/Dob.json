@@ -3,11 +3,12 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Enter DOB",
+      "text": "Please provide your date of birth and your email address.",
       "wrap": true
     },
     {
       "type": "Input.Date",
+      "label": "Date of Birth",
       "id": "DateOfBirth",
       "validation": {
         "necessity": "Required",
@@ -15,14 +16,9 @@
       }
     },
     {
-      "type": "TextBlock",
-      "text": "Enter Email ID",
-      "wrap": true
-    },
-    {
       "type": "Input.Text",
+      "label": "Email Address",
       "id": "EmailAddress",
-      "placeholder": "Email Address",
       "validation": {
         "necessity": "Required",
         "errorMessage": "Email Address is required"

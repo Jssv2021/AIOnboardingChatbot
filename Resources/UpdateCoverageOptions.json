@@ -10,6 +10,7 @@
     {
       "type": "Input.ChoiceSet",
       "label": "Personal Property Coverage",
+      "value": "${personalPropertyCoverage}",
       "choices": [
         {
           "title": "16100",
@@ -20,11 +21,12 @@
           "value": "32200"
         }
       ],
-      "id": "PPC"
+      "id": "personalPropertyCoverage"
     },
     {
       "type": "Input.ChoiceSet",
       "label": "Property Deduction",
+      "value": "${propertyDeduction}",
       "choices": [
         {
           "title": "1000",
@@ -35,11 +37,12 @@
           "value": "500"
         }
       ],
-      "id": "PD"
+      "id": "propertyDeduction"
     },
     {
       "type": "Input.ChoiceSet",
       "label": "Personal Liability Limit",
+      "value": "${personalLiabilityLimit}",
       "choices": [
         {
           "title": "100000",
@@ -50,11 +53,12 @@
           "value": "150000"
         }
       ],
-      "id": "PLL"
+      "id": "personalLiabilityLimit"
     },
     {
       "type": "Input.ChoiceSet",
       "label": "Damage to Property of Others",
+      "value": "${damageToPropertyOfOthers}",
       "choices": [
         {
           "title": "25000",
@@ -65,7 +69,13 @@
           "value": "35000"
         }
       ],
-      "id": "DTPOO"
+      "id": "damageToPropertyOfOthers"
+    },
+    {
+      "type": "Input.Text",
+      "value": "${customerId}",
+      "id": "customerId",
+      "isVisible": false
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -75,7 +85,7 @@
       "type": "Action.Submit",
       "title": "OK",
       "data": {
-        "button": "CoverageCardOk"
+        "button": "UpdateCoverageCardOk"
       }
     }
   ]

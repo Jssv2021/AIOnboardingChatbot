@@ -70,7 +70,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             if (Exists(jResult, "State")) { usrInputResult.AppendLine(CreateCustomer.SetState(jResult["State"].ToString())); }
             if (Exists(jResult, "EmailAddress")) { usrInputResult.AppendLine(CreateCustomer.SetEmail(jResult["EmailAddress"].ToString())); }
             if (Exists(jResult, "MobileNumber")) { usrInputResult.AppendLine(CreateCustomer.SetMobileNumber(jResult["MobileNumber"].ToString())); }
-            if (Exists(jResult, "DOB")) { usrInputResult.AppendLine(CreateCustomer.SetDateofBirth(jResult["DOB"].ToString())); }
+            if (Exists(jResult, "DateOfBirth")) { usrInputResult.AppendLine(CreateCustomer.SetDateofBirth(jResult["DateOfBirth"].ToString())); }
             if (Exists(jResult, "PPC")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalPropertyCoverage(jResult["PPC"].ToString())); }
             if (Exists(jResult, "PLL")) { usrInputResult.AppendLine(CustomerCoverage.SetPersonalLiabilityLimit(jResult["PLL"].ToString())); }
             if (Exists(jResult, "PD")) { usrInputResult.AppendLine(CustomerCoverage.SetPropertyDeduction(jResult["PD"].ToString())); }
@@ -88,7 +88,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             CreateCustomer.Instance.MiddleName = ThisOrThat(CreateCustomer.Instance.MiddleName, customerDetails.middleName);
             CreateCustomer.Instance.LastName = ThisOrThat(CreateCustomer.Instance.LastName, customerDetails.lastName);
             CreateCustomer.Instance.ZipCode = ThisOrThat(CreateCustomer.Instance.ZipCode, customerDetails.zipCode);
-            CreateCustomer.Instance.DateOfBirth = ThisOrThat(CreateCustomer.Instance.DateOfBirth, customerDetails.dateOfBirth.ToString("yyyy-MM-ddTHH:mm:sszzz"));
+            CreateCustomer.Instance.DateOfBirth = ThisOrThat(CreateCustomer.Instance.DateOfBirth, customerDetails.dateOfBirth);
             CreateCustomer.Instance.AddressLine1 = ThisOrThat(CreateCustomer.Instance.AddressLine1, customerDetails.addressLine1);
             CreateCustomer.Instance.AddressLine2 = ThisOrThat(CreateCustomer.Instance.AddressLine2, customerDetails.addressLine2);
             CreateCustomer.Instance.State = ThisOrThat(CreateCustomer.Instance.State, customerDetails.state);
@@ -96,14 +96,60 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             CreateCustomer.Instance.EmailAddress = ThisOrThat(CreateCustomer.Instance.EmailAddress, customerDetails.emailAddress);
         }
 
-        private static Func<string, string, string> ThisOrThat = (@this, that) =>
+        public static async void UpdateCoverageDetails(CoverageDto coverageDetails)
         {
-            Option<string> val = String.IsNullOrEmpty(that) ? None : Some(that);
+            CustomerCoverage.Instance.PersonalPropertyCoverage = ThisOrThat(CustomerCoverage.Instance.PersonalPropertyCoverage, coverageDetails.personalPropertyCoverage);
+            CustomerCoverage.Instance.PersonalLiabilityLimit = ThisOrThat(CustomerCoverage.Instance.PersonalLiabilityLimit, coverageDetails.personalLiabilityLimit);
+            CustomerCoverage.Instance.PropertyDeduction = ThisOrThat(CustomerCoverage.Instance.PropertyDeduction, coverageDetails.propertyDeduction);
+            CustomerCoverage.Instance.DamageToPropertyOfOthers = ThisOrThat(CustomerCoverage.Instance.DamageToPropertyOfOthers, coverageDetails.damageToPropertyOfOthers);
+        }
+
+        public static async void UpdatePolicyDetails(PolicyDto policyDetails)
+        {
+            CustomerPolicy.Instance.CustomerId = Convert.ToInt32(ThisOrThat(CreateCustomer.Instance.CustomerId.ToString(), policyDetails.customerId));
+            //CustomerPolicy.Instance.PolicyNumber = Convert.ToInt32(ThisOrThat(CreateCustomer.Instance.PolicyNumber.ToString(), policyDetails.policyNumber));
+            CustomerPolicy.Instance.PolicyEffectiveDate = ThisOrThat(CustomerPolicy.Instance.PolicyEffectiveDate, policyDetails.policyEffectiveDate);
+            CustomerPolicy.Instance.PolicyExpiryDate = ThisOrThat(CustomerPolicy.Instance.PolicyExpiryDate, policyDetails.policyExpiryDate);
+            CustomerPolicy.Instance.PaymentOption = ThisOrThat(CustomerPolicy.Instance.PaymentOption, policyDetails.paymentOption);
+            CustomerPolicy.Instance.TotalAmount = Convert.ToDouble(ThisOrThat(CustomerPolicy.Instance.TotalAmount.ToString(), policyDetails.totalAmount));
+            CustomerPolicy.Instance.Active = ThisOrThat(CustomerPolicy.Instance.Active, policyDetails.active);
+        }
+
+        //private static string ThisOrThat(string @this, string@that)
+        //{
+        //    Option<string> val = String.IsNullOrEmpty(that) ? None : Some(that);
+        //    return val.Match(
+        //        None: () => @this,
+        //        Some: (t) => t
+        //    );
+        //}
+
+        private static string ThisOrThat(string @this, DateTime @that)
+        {
+            Option<string> val = that.ToString("yyyy-MM-ddTHH:mm:sszz z") == "0001-01-01T00:00:00-06:00" ? None : Some(that.ToString("yyyy-MM-ddTHH:mm:sszzz"));
             return val.Match(
                 None: () => @this,
-                Some: (t) => that
+                Some: (t) => t
             );
-        };
+        }
+
+        private static DateTime ThisOrThat(DateTime @this, DateTime @that)
+        {
+            Option<DateTime> val = that.ToString("yyyy-MM-ddTHH:mm:sszz z") == "0001-01-01T00:00:00-06:00" ? None : Some(that);
+            return val.Match(
+                None: () => @this,
+                Some: (t) => t
+            );
+        }
+
+        private static T ThisOrThat<T>(T @this, T @that)
+        {
+            Option<T> val = ((that == null) || that.Equals(default)) ? None : Some(that);
+            return val.Match(
+                None: () => @this,
+                Some: (t) => t
+            );
+        }
 
         public static async Task<string> UpdateAndSave(string customerId)
         {

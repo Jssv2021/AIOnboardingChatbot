@@ -7,13 +7,8 @@
       "wrap": true
     },
     {
-      "type": "TextBlock",
-      "text": "Address Line 1",
-      "wrap": true
-    },
-    {
       "type": "Input.Text",
-      "placeholder": "Address Line1",
+      "label": "Address Line 1",
       "id": "AddressLine1",
       "validation": {
         "necessity": "Required",
@@ -21,24 +16,13 @@
       }
     },
     {
-      "type": "TextBlock",
-      "text": "Address Line 2",
-      "wrap": true
-    },
-    {
       "type": "Input.Text",
-      "placeholder": "Address Line2",
+      "label": "Address Line 2",
       "id": "AddressLine2"
-
-    },
-    {
-      "type": "TextBlock",
-      "text": "State",
-      "wrap": true
     },
     {
       "type": "Input.Text",
-      "placeholder": "State",
+      "label": "State",
       "id": "State",
       "validation": {
         "necessity": "Required",

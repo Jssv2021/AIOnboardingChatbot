@@ -40,33 +40,24 @@ namespace ChatbotCustomerOnboarding.DataModel
         public static Func<string, string> SetPolicyEffectiveDate = (policyEffectiveDate) =>
         {
             var result = Date.Parse(policyEffectiveDate).Match(Some: (e) => e, None: () => defaultTime);
-
             if (result == defaultTime) return $"{IsInvalid}:policyEffectiveDate {policyEffectiveDate} {Errors.Message}";
-
             CustomerPolicy.Instance.PolicyEffectiveDate = result;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetPolicyExpiryDate = (policyExpiryDate) =>
         {
             var result = Date.Parse(policyExpiryDate).Match(Some: (e) => e, None: () => defaultTime);
-
             if (result == defaultTime) return $"{IsInvalid}:policyExpiryDate {policyExpiryDate} {Errors.Message}";
-
             CustomerPolicy.Instance.PolicyExpiryDate = result;
-
             return Isvalid;
         };
 
         public static Func<string, string> SetPaymentOption = (paymentOption) =>
         {
             var result = Validator.IsAlpha(paymentOption) ? paymentOption : IsInvalid;
-
             if (result == IsInvalid) return $"{IsInvalid}: paymentOption {paymentOption} {Errors.Message}";
-
             CustomerPolicy.Instance.PaymentOption = paymentOption;
-
             return Isvalid;
         };
     }

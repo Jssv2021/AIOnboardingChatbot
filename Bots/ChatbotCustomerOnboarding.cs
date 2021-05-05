@@ -70,20 +70,36 @@ namespace Microsoft.BotBuilderSamples.Bots
                     _currentActiveCard = ConversationalFlow.GetNextCard(_userResponse["button"].ToString()).Result.ToString();
                     if (_currentActiveCard.Contains("Update"))
                     {
-                        string customerEmail = _userResponse["emailAddress"];
-                        JToken response = (JToken)_userResponse;
-                        Option<CustomerDto> customerDto = (response.Count() > 2) ? CustomerInfo.ConvertToObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomerAsync(customerEmail);
-                        Option<CustomerDto> nextCardDto = await CustomerInfo.GetCustomerAsync(customerEmail);
-                        _cardAttachment = nextCardDto.Match(
-                            None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
-                            Some: (n) => CreateAdaptiveCardAttachmentDto(n, _currentActiveCard)
-                        );
-                        //_cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
-                        customerDto.Match(
-                            None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
-                            Some: async (c) => await UpdateCustomerAndSaveIfFinal(c)
-                        );
-                        cardFlag = true;
+                        if (_currentActiveCard == Card.UpdateQuoteCard)
+                        {
+                            var result = await QuoteCard.GetQuote();
+                            if (result.Contains("Error"))
+                            {
+                                await turnContext.SendActivityAsync(MessageFactory.Text($"{result} {errorHandlingText} "), cancellationToken);
+                                return;
+                            };
+                            GetCustomer.Instance.Quote = result;
+                            _cardAttachment = CreateQuoteCardAttachment();
+                            cardFlag = true;
+                        }
+                        else
+                        {
+                            string customerEmail = _userResponse["emailAddress"];
+                            JToken response = (JToken)_userResponse;
+                            Option<CustomerDto> customerDto = (response.Count() > 2) ? CustomerInfo.ConvertToObject<CustomerDto>(JsonConvert.SerializeObject(_userResponse)) : await CustomerInfo.GetCustomerAsync(customerEmail);
+                            Option<CustomerDto> nextCardDto = await CustomerInfo.GetCustomerAsync(customerEmail);
+                            _cardAttachment = nextCardDto.Match(
+                                None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
+                                Some: (n) => CreateAdaptiveCardAttachmentDto(n, _currentActiveCard)
+                            );
+                            //_cardAttachment = CreateAdaptiveCardAttachmentDto(nextCardDto, _currentActiveCard);
+                            customerDto.Match(
+                                None: () => CreateAdaptiveCardAttachment(Path.Combine(".", "Resources", "LoginWithEmailNotFound.json")),
+                                Some: async (c) => await UpdateCustomerAndSaveIfFinal(c)
+                            );
+                            cardFlag = true;
+                        }
+
                     }
                     else
                     {
@@ -120,7 +136,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                     {
                         if (CreateCustomer.Instance.CustomerId == 0)
                         {
-                            var customerInfo = await QuoteCard.CreateCustomerRentersInsurance(); 
+                            var customerInfo = await QuoteCard.CreateCustomerRentersInsurance();
+                            var quoteInfo = await QuoteCard.AddCoverage();
                         }                        
                         _cardAttachment = QuoteCardAttachment(); cardFlag = true;
                     }

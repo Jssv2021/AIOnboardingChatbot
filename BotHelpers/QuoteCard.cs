@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -71,6 +72,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             customerRecord["addressLine1"] = $"{CreateCustomer.Instance.AddressLine1}";
             customerRecord["addressLine2"] = $"{CreateCustomer.Instance.AddressLine2}";
             customerRecord["state"] = $"{CreateCustomer.Instance.State}";
+            customerRecord["dateOfBirth"] = $"{CreateCustomer.Instance.DateOfBirth}";
             customerRecord["mobileNumber"] = CreateCustomer.Instance.MobileNumber;
             customerRecord["emailAddress"] = CreateCustomer.Instance.EmailAddress;
             Option<HttpResponseMessage> getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Customer", "", HttpStatusCode.Created, customerRecord.ToString());
@@ -125,7 +127,7 @@ namespace ChatbotCustomerOnboarding.BotHelpers
             customerRecord["totalAmount"] = CustomerPolicy.Instance.TotalAmount;
 
 
-            Option<HttpResponseMessage> getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Coverage", "", HttpStatusCode.Created, customerRecord.ToString());
+            Option<HttpResponseMessage> getCustomer = await Invoke.PostAPI("https://ai-customer-onboarding-dev.azurewebsites.net/api/Policy", "", HttpStatusCode.Created, customerRecord.ToString());
             string getQuoteJson =
                 await getCustomer.Match(
                     None: () => ReportNotFound(),
@@ -145,9 +147,13 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         {
             var thumbnailCard = new ThumbnailCard
             {
-                Title = $"Renters Insurance Quote - EstimatedTotal: {GetCustomer.Instance.Quote} per month;",
-                Subtitle = "Personal Details",
-                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; Address: {CreateCustomer.Instance.AddressLine1}, {CreateCustomer.Instance.AddressLine2},State: {CreateCustomer.Instance.State}, ZipCode: {CreateCustomer.Instance.ZipCode}",
+                Title = $"Est. Monthly Insurance Premium: {Convert.ToDecimal(GetCustomer.Instance.Quote).ToString("C2", CultureInfo.CurrentCulture)}.",
+                Subtitle = "Please verify your personal information below.",
+                Text = 
+                    $"NAME: {CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}\r\n\r\n" +
+                    $"ADDRESS: {CreateCustomer.Instance.AddressLine1} " +
+                    $"{(CreateCustomer.Instance.AddressLine2 == System.String.Empty ? System.String.Empty : CreateCustomer.Instance.AddressLine2)} " +
+                    $"{CreateCustomer.Instance.State} {CreateCustomer.Instance.ZipCode}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "QuoteCardOk"
                         ) }
@@ -161,14 +167,15 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         {
             var thumbnailCard = new ThumbnailCard
             {
-                Title = $"Renters insurance has been successfully Purchased:",
-                Subtitle = $"Customer ID: {CreateCustomer.Instance.CustomerId},PolicyNo: {CreateCustomer.Instance.PolicyNumber}",
-                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; " +
-                $"Address: {CreateCustomer.Instance.AddressLine1}, " +
-                $"{CreateCustomer.Instance.AddressLine2}," +
-                $"State: {CreateCustomer.Instance.State}, " +
-                $"ZipCode: {CreateCustomer.Instance.ZipCode}," +
-                $"Total Amount:{CustomerPolicy.Instance.TotalAmount}",
+                Title = $"Renters insurance has been successfully Purchased for:",
+                Subtitle = $"{CreateCustomer.Instance.FirstName.ToUpper()} {CreateCustomer.Instance.MiddleName.ToUpper()} {CreateCustomer.Instance.LastName.ToUpper()}",
+                Text =
+                    $"ADDRESS: {CreateCustomer.Instance.AddressLine1} " +
+                    $"{(CreateCustomer.Instance.AddressLine2 == System.String.Empty ? System.String.Empty : CreateCustomer.Instance.AddressLine2)} " +
+                    $"{CreateCustomer.Instance.State} {CreateCustomer.Instance.ZipCode}\r\n\r\n" +
+                    $"CUSTOMER ID: {CreateCustomer.Instance.CustomerId}\r\n\r\n" +
+                    $"POLICY NUMBER: {CreateCustomer.Instance.PolicyNumber}\r\n\r\n" +
+                    $"TOTAL AMOUNT: {Convert.ToDecimal(CustomerPolicy.Instance.TotalAmount).ToString("C2", CultureInfo.CurrentCulture)}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "CustomerOk"
                         ) }
@@ -181,9 +188,13 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         {
             var thumbnailCard = new ThumbnailCard
             {
-                Title = $"An email has been sent with quote information:",
-                Subtitle = $"Customer ID:{CreateCustomer.Instance.CustomerId}, {CreateCustomer.Instance.EmailAddress}",
-                Text = $"Name:{CreateCustomer.Instance.FirstName} {CreateCustomer.Instance.MiddleName} {CreateCustomer.Instance.LastName}; Address: {CreateCustomer.Instance.AddressLine1}, {CreateCustomer.Instance.AddressLine2},State: {CreateCustomer.Instance.State}, ZipCode: {CreateCustomer.Instance.ZipCode}",
+                Title = $"Quote Emailed to {CreateCustomer.Instance.EmailAddress}",
+                Subtitle = $"FOR: {CreateCustomer.Instance.FirstName.ToUpper()} {CreateCustomer.Instance.MiddleName.ToUpper()} {CreateCustomer.Instance.LastName.ToUpper()}",
+                Text =
+                    $"ADDRESS: {CreateCustomer.Instance.AddressLine1} " +
+                    $"{(CreateCustomer.Instance.AddressLine2 == System.String.Empty ? System.String.Empty : CreateCustomer.Instance.AddressLine2)} " +
+                    $"{CreateCustomer.Instance.State} {CreateCustomer.Instance.ZipCode}\r\n\r\n" +
+                    $"CUSTOMER ID: {CreateCustomer.Instance.CustomerId}",
                 Buttons = new[] {new CardAction(
                         ActionTypes.MessageBack, $"Ok", value: "emailConfirmOk"
                         ) }

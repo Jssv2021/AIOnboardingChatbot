@@ -8,25 +8,28 @@
     },
     {
       "type": "Input.Date",
-      "label": "Policy Effective Date",
-      "id": "PolicyEffectiveDate",
+      "label": "Policy Start Date",
+      "value": "${policyEffectiveDate}",
+      "id": "policyEffectiveDate",
       "validation": {
         "necessity": "Required",
-        "errorMessage": "Policy Effective Date is required"
+        "errorMessage": "Policy start date is required"
       }
     },
     {
       "type": "Input.Date",
       "label": "Policy Expiration Date",
-      "id": "PolicyExpiryDate",
+      "value": "${policyExpiryDate}",
+      "id": "policyExpiryDate",
       "validation": {
         "necessity": "Required",
-        "errorMessage": "Policy Expiration Date is required"
+        "errorMessage": "Policy expiration is required"
       }
     },
     {
       "type": "Input.ChoiceSet",
       "label": "Payment Option",
+      "value": "${paymentOption}",
       "choices": [
         {
           "title": "Credit",
@@ -37,7 +40,7 @@
           "value": "Debit"
         }
       ],
-      "id": "PO",
+      "id": "paymentOption",
       "validation": {
         "necessity": "Required",
         "errorMessage": "Payment Option is required"
@@ -51,7 +54,7 @@
       "type": "Action.Submit",
       "title": "OK",
       "data": {
-        "button": "PolicySummaryOk"
+        "button": "UpdatePolicySummaryOk"
       }
     }
   ]

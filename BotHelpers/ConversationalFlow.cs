@@ -23,6 +23,11 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         private const string UpdateDobCard = "UpdateDobOK";
         private const string UpdateMailingAddressCard = "UpdateMailingAddressOK";
         private const string UpdateFinalCard = "UpdateFinalOK";
+        private const string UpdateQuoteCard = "UpdateQuoteCardOk";
+        private const string UpdateCustomerCard = "UpdateCustomerCardOk";
+        private const string UpdateCoverageCard = "UpdateCoverageCardOk";
+        private const string UpdatePolicySummaryCard = "UpdatePolicySummaryOk";
+        private const string UpdateEmailConfirmationOk = "UpdateEmailConfirmOk";
         private const string NewCustomer = "NewCustomer";
         private const string LoginWithEmailCard = "LoginWithEmailNotFoundOK";
         private const string LoginWithEmailNotFoundCard = "LoginWithEmailOK";
@@ -44,6 +49,12 @@ namespace ChatbotCustomerOnboarding.BotHelpers
         public static Func<string> UpdateDob = () => { return Path.Combine(".", "Resources", "UpdateDob.json"); };
         public static Func<string> UpdateMailingAddress = () => { return Path.Combine(".", "Resources", "UpdateMailingAddress.json"); };
         public static Func<string> UpdateFinal = () => { return Path.Combine(".", "Resources", "UpdateFinal.json"); };
+        public static Func<string> UpdateQuoteRentersInsurance = () => { return Path.Combine(".", "Resources", "UpdateQuoteRentersInsurance.json"); };
+        public static Func<string> UpdateCustomerInformation = () => { return Path.Combine(".", "Resources", "UpdateQuoteRentersInsurance.json"); };
+        public static Func<string> UpdateCoverageOptions = () => { return Path.Combine(".", "Resources", "UpdateCoverageOptions.json"); };
+        public static Func<string> UpdateSendEmailToCustomer = () => { return ("UpdateSendEmail"); };
+        public static Func<string> UpdatePolicySummary = () => { return Path.Combine(".", "Resources", "UpdatePolicySummary.json"); };
+        public static Func<string> UpdateRenterInsurancePolicy = () => { return "UpdateRentersInsuranceCard"; };
         public static Func<string> ZipCode = () => { return Path.Combine(".", "Resources", "ZipCode.json"); };
         public static Func<string> DateOfBirth = () => { return Path.Combine(".", "Resources", "Dob.json"); };
         public static Func<string> MailingAddress = () => { return Path.Combine(".", "Resources", "MailingAddress.json"); };
@@ -66,7 +77,11 @@ namespace ChatbotCustomerOnboarding.BotHelpers
                 UpdateZipCodeCard => UpdateDob(),
                 UpdateDobCard => UpdateMailingAddress(),
                 UpdateMailingAddressCard => UpdateFinal(),
-                UpdateFinalCard => Card.QuoteCard,
+                UpdateFinalCard => Card.UpdateQuoteCard,
+                UpdateQuoteCard => Card.UpdateEmailConfirmationCard,
+                UpdateEmailConfirmationOk => UpdateCoverageOptions(),
+                UpdateCoverageCard => UpdatePolicySummary(),
+                UpdatePolicySummaryCard => Card.UpdateRentersInsuranceCard,//ThumbNail - RentersInsurance Card
                 NewCustomer => NameCard(),
                 CustomerName => ZipCode(),
                 Zip => DateOfBirth(),

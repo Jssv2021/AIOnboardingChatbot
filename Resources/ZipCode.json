@@ -8,7 +8,7 @@
     },
     {
       "type": "Input.Text",
-      "placeholder": "ZipCode",
+      "label": "Zip Code",
       "maxLength": 5,
       "id": "ZipCode",
       "validation": {
