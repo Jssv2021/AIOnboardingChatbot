@@ -72,7 +72,7 @@ namespace ChatbotCustomerOnboarding.DataModel
         public static Func<string, string> SetMiddleName = (name) =>
         {
             string result = "";
-            if (name.Length > 0) { result = Validator.IsAlpha(name) ? name : IsInvalid; }
+            if (name.Length > 0) { result = Validator.IsAlpha(name) || string.IsNullOrEmpty(name) ? name : IsInvalid; }
             if (result == IsInvalid) return $"{IsInvalid}: MiddleName {name} {Errors.Message}";
             CreateCustomer.Instance.MiddleName = name;
             return Isvalid;
